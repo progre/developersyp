@@ -13,6 +13,8 @@
     "grunt": "~0.4.1",
     "grunt-develop": "~0.0.2",
     "grunt-regarde": "~0.1.1",
-    "grunt-contrib-livereload": "~0.1.2"
+    "grunt-contrib-livereload": "~0.1.2",
+    "grunt-exec": "~0.4.1",
+    "grunt-typescript": ">=0.1.6"
   }
 }

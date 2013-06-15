@@ -1,4 +1,5 @@
 module.exports = function (grunt) {
+  grunt.loadNpmTasks('grunt-typescript');
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
@@ -23,6 +24,30 @@ module.exports = function (grunt) {
         files: ['views/*.jade'],
         tasks: ['livereload']
       }
+    },
+    typescript: {
+      base: {
+        src: ['src/**/*.ts'],
+        dest: '',
+        options: {
+//          module: 'amd', //or commonjs
+//          target: 'es5', //or es3
+          base_path: 'src',
+          sourcemap: true,
+          fullSourceMapPath: true,
+//          declaration: true
+        }
+      }
+    },
+    exec: {
+      tsd: {
+        cmd: function () {
+          var dependencies = [
+            'express', 'node'
+          ];
+          return 'tsd install ' + dependencies.join(' ');
+        }
+      }
     }
 	});
   grunt.registerTask('delayed-livereload', 'delayed livereload', function () {
@@ -35,6 +60,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-develop');
   grunt.loadNpmTasks('grunt-regarde');
   grunt.loadNpmTasks('grunt-contrib-livereload');
+  grunt.loadNpmTasks('grunt-exec');
 
-  grunt.registerTask('default', ['livereload-start', 'develop', 'regarde']);
+  grunt.registerTask('default', ['livereload-start', 'typescript', 'develop', 'regarde']);
 };

@@ -1,5 +1,16 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .navbar.navbar-inverse.navbar-static-top
+    .navbar-inner
+      .container
+        ul.nav
+          li
+            a(style='color:#444') チャンネルリスト
+          li.active
+            a(href='#') このサービスについて
+          li
+            a(style='color:#444') 利用規約
+        a.nav.pull-right.brand(href='#') Developer's YP
+  .container
+    |under construction...
