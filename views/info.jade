@@ -1,0 +1,102 @@
+extends layout
+
+block content
+  h1 チャンネルを視聴するには
+  p
+    :markdown
+      PeerCast Developer's YPのチャンネルを視聴するには、まずお使いのパソコンにPeerCastをインストールします。
+      以下のサイトからダウンロード出来ます。
+
+      [PeerCastStation](http://www.pecastation.org/)
+
+      適当なフォルダに解凍すればインストールは完了です。
+      その後、PeerCastStation.exeを起動してください。
+
+      そして、[チャンネルリスト](/list.html)にアクセスし、ポートチェックを行なってください。
+      ポートチェックに成功したら、お好きなチャンネルをクリックすると、再生が始まります。
+  hr
+  h1 PeerCastとは
+  p
+    :markdown
+      PeerCast（ピアキャスト）はPeer to Peer型のリアルタイム動画配信ソフトウェアです。
+      GNU General Public Licenseの下、誰でも無償で利用できます。
+
+      PeerCastは2002年にGiles Goddard氏によって最初のバージョンがリリースされ、
+      現在はその後継にあたるPeerCastStationが日本の有志によって開発されています。
+
+      PeerCastで配信されているチャンネルは、インターネット上の複数のYellowPages（イエローページ）で管理されています。
+      ここDeveloper's YPの他にもいくつかのYellowPagesがあります。
+
+  p see also: 
+    a(href='http://listeners.reep.info/') Peca視聴者Wiki
+  hr
+  h1 Developer's YPとは
+  p
+    :markdown
+      Developer's YPは、ソフトウェア開発者の為に構築されたYellowPagesです。
+
+      Under construction...
+  h2 Pricing
+  .row
+    .span12
+      table.table.table-condensed.table-hover
+        tr
+          th
+          th すべてのユーザー
+        tr
+          td 回線速度
+          td
+            <strong class='text-success'>速度の劣化なし</strong>（リレーの品質に依存）
+        tr
+          td 画質
+          td
+            strong.text-success 常に元の画質
+        tr
+          td お気に入り上限
+          td
+            <strong class='text-success'>無制限</strong>（ご使用のツールに依存）
+        tr
+          td 時報
+          td
+            strong.text-success 無し
+        tr
+          td 動画の自動再生
+          td
+            <strong class='text-success'>可能</strong>（ご使用のツールをご確認ください）
+        tr
+          td 掲示板の装飾
+          td
+            strong.text-success 改行や文字の太さ、大きさ、色などの使用の他、独自のスクリプトの埋め込みも可能（したらば掲示板・わいわいKakiko使用時）
+        tr
+          td コメント
+          td
+            <strong class='text-success'>AA（アスキーアート）の投稿が可能</strong>（したらば掲示板・わいわいKakiko使用時）
+        tr
+          td 掲示板の履歴
+          td
+            <strong class='text-success'>無制限に保存可能</strong>（したらば掲示板・わいわいKakiko使用時）
+        tr
+          td NG設定
+          td
+            <strong class='text-success'>無制限に使用可能</strong>（したらば掲示板・わいわいKakiko使用時）
+        tr
+          td PeerCast Androidアプリ
+          td
+            strong.text-success PCと同じ画質で視聴可能
+        tr
+          td チャンネルの配信
+          td
+            strong.text-success 可能
+        tr
+          td
+          td
+        tr
+          td 月額
+          td
+            strong.text-success 0円
+        tr
+          td
+          td
+            a.btn.btn-success.disabled
+              i.icon-shopping-cart.icon-white
+              |You're already listener »

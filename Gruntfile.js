@@ -1,6 +1,4 @@
-module.exports = function (grunt) {
-  grunt.loadNpmTasks('grunt-typescript');
-
+module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     develop: {
@@ -11,18 +9,28 @@ module.exports = function (grunt) {
     regarde: {
       js: {
         files: [
-          'app.js',
-          'routes/*.js'
+            'app.js',
+            'routes/*.js'
         ],
         tasks: ['develop', 'delayed-livereload']
       },
-      css: {
-        files: ['public/stylesheets/*.css'],
-        tasks: ['livereload']
+      stylus: {
+        files: ['src/public/stylesheets/*.styl'],
+        tasks: ['stylus', 'delayed-livereload']
       },
       jade: {
         files: ['views/*.jade'],
         tasks: ['livereload']
+      }
+    },
+    stylus: {
+      compile: {
+        options: {
+          urlfunc: 'embedurl'
+        },
+        files: {
+          'public/stylesheets/style.css': 'src/public/stylesheets/style.styl'
+        }
       }
     },
     typescript: {
@@ -30,37 +38,45 @@ module.exports = function (grunt) {
         src: ['src/**/*.ts'],
         dest: '',
         options: {
-//          module: 'amd', //or commonjs
-//          target: 'es5', //or es3
+          //          module: 'amd', //or commonjs
+          //          target: 'es5', //or es3
           base_path: 'src',
           sourcemap: true,
-          fullSourceMapPath: true,
-//          declaration: true
+          fullSourceMapPath: true
+          //          declaration: true
         }
       }
     },
     exec: {
       tsd: {
-        cmd: function () {
+        cmd: function() {
           var dependencies = [
-            'express', 'node'
+              'express', 'node'
           ];
           return 'tsd install ' + dependencies.join(' ');
         }
       }
     }
-	});
-  grunt.registerTask('delayed-livereload', 'delayed livereload', function () {
+  });
+  grunt.registerTask('delayed-livereload', 'delayed livereload', function() {
     var done = this.async();
-    setTimeout(function () {
+    setTimeout(function() {
       grunt.task.run('livereload');
       done();
     }, 500);
   });
-	grunt.loadNpmTasks('grunt-develop');
+  grunt.loadNpmTasks('grunt-develop');
   grunt.loadNpmTasks('grunt-regarde');
   grunt.loadNpmTasks('grunt-contrib-livereload');
+  grunt.loadNpmTasks('grunt-contrib-stylus');
+  grunt.loadNpmTasks('grunt-typescript');
   grunt.loadNpmTasks('grunt-exec');
 
-  grunt.registerTask('default', ['livereload-start', 'typescript', 'develop', 'regarde']);
+  grunt.registerTask('default', [
+      'livereload-start',
+      'stylus',
+      'typescript',
+      'develop',
+      'regarde'
+  ]);
 };

@@ -54,7 +54,7 @@ module PCP
       server.mount_proc('/') {|req, res|
         res['Content-Type'] = 'text/plain'
         # index.txt
-        res.body = [
+        body = [
           "DP - お知らせ",
           "00000000000000000000000000000000",
           "",
@@ -79,33 +79,42 @@ module PCP
           info_children = channel.info.children
           host_children = channel.hosts.values[0].info.children
           track_children = channel.track.children
-          p track_children
-          res.body += [
-            info_children[0].value, # チャンネル名
+          genre = info_children.select{|x|x.name=="gnre"}[0].value.force_encoding("utf-8")
+          next unless genre =~ /^dp/
+          body += [
+            info_children.select{|x|x.name=="name"}[0].value.force_encoding("utf-8"), # チャンネル名
             channel.channel_id, # チャンネルID
             host_children[2].value.join(".") + ":" + host_children[3].value.to_s, # IP:Port
-            info_children[3].value, # コンタクトURL
-            info_children[2].value, # ジャンル
-            info_children[4].value, # 詳細
+            info_children.select{|x|x.name=="url"}[0].value.force_encoding("utf-8"), # コンタクトURL
+            genre[2..genre.length], # ジャンル
+            info_children.select{|x|x.name=="desc"}[0].value.force_encoding("utf-8").force_encoding("utf-8"), # 詳細
             host_children[6].value, # 視聴数
             host_children[7].value, # リレー数
-            info_children[1].value.to_s, # ビットレート
-            info_children[6].value.split(//u)[0..-2].join, # 形式 最後の文字を削除
-            track_children[1].value, # アーティスト
-            track_children[3].value, # アルバム
-            track_children[0].value, # タイトル
-            track_children[2].value, # URL
-            CGI.escape(info_children[0].value),
-            Time.at(host_children[9].value).strftime("%R"),
+            info_children.select{|x|x.name=="bitr"}[0].value.to_s, # ビットレート
+            info_children.select{|x|x.name=="type"}[0].value.split(//u)[0..-2].join.force_encoding("utf-8"), # 形式 最後の文字を削除
+            track_children[1].value.force_encoding("utf-8"), # アーティスト
+            track_children[3].value.force_encoding("utf-8"), # アルバム
+            track_children[0].value.force_encoding("utf-8"), # タイトル
+            track_children[2].value.force_encoding("utf-8"), # URL
+            CGI.escape(info_children.select{|x|x.name=="name"}[0].value.force_encoding("utf-8")),
+            second_to_time(host_children[9].value),
             "click",
-            info_children[5].value,
+            info_children.select{|x|x.name=="cmnt"}[0].value.force_encoding("utf-8"),
             0.to_s
           ].join("<>") + "\r\n"
         end
+        res.body = body
       }
       server.start
 
     end
+
+    def second_to_time(sec)
+      m = sec / 60
+      h = m / 60
+      h.to_s + ":" + m.to_s
+    end
+
     attr_reader :host, :port, :session_id, :client_threads
     attr_accessor :channels
 

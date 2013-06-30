@@ -1,0 +1,18 @@
+main{padding-top:60px}
+@media (max-width: 979px){main{padding-top:0}
+}html,body{height:100%}
+.wrapper{min-height:100%;height:auto !important;height:100%;margin:0 auto -55px}
+footer{border-top:1px solid #e5e5e5;background-color:#f5f5f5}
+.push,footer{height:54px}
+footer .row-fluid{margin:12px 0}
+html,body{background-image:url("../images/white_wall_hash.png")}
+.marketing i{font-size:200px}
+.hero-unit i{font-size:160px}
+.hero-unit h1{font-weight:bold;line-height:1;font-size:80px;letter-spacing:-2px}
+@media (max-width: 979px){.hero-unit i{font-size:120px}
+.hero-unit h1{font-size:60px}
+}@media (max-width: 767px){.hero-unit i{font-size:100px}
+.hero-unit h1{font-size:50px}
+}@media (max-width: 480px){.hero-unit i{font-size:90px}
+.hero-unit h1{font-size:45px}
+}

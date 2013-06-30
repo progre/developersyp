@@ -1,11 +1,40 @@
 doctype 5
 html
   head
-    title Developer's YP
+    title PeerCast Developer's YP
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
-    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css')
+    link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css')
     script(src='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js')
     script(src='//ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js')
+    link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='//localhost:35729/livereload.js')
   body
-    block content
+    .wrapper
+      .navbar.navbar-inverse.navbar-fixed-top
+        .navbar-inner
+          .container
+            ul.nav
+              li(class='#{ name === 'list' ? 'active' : '' }')
+                a(href='#{ name === 'list' ? '#' : 'list.html' }')
+                  チャンネルリスト
+              li(class='#{ name === 'info' ? 'active' : '' }')
+                a(href='#{ name === 'info' ? '#' : 'info.html' }')
+                  このサービスについて
+              li(class='#{ name === 'broadcast' ? 'active' : '' }')
+                a(href='#{ name === 'broadcast' ? '#' : 'broadcast.html' }')
+                  掲載方法
+            a.nav.pull-right.brand(href='#{ name === 'index' ? '#' : '/' }')
+              |PeerCast Developer's YP(α)
+      main.container
+        block content
+        .push
+    footer
+      .container
+        .row-fluid
+          .span12
+            .span8
+              |このサイトを利用して発生したいかなる問題もサイト運営者は責任を負いません
+              //a(href='terms.html') 利用規約
+            .span4
+              p.muted.pull-right © 2013 ぷろぐれ. All rights reserved
