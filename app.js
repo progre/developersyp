@@ -1,7 +1,19 @@
 var express = require('express');
 var http = require('http');
 var path = require('path');
+var log4js = require('log4js');
 var routes = require("./routes/index");
+
+log4js.configure({
+    appenders: [
+        {
+            "type": "dateFile",
+            "filename": "logs/access.log",
+            "pattern": "-yyyy-MM-dd"
+        }
+    ]
+});
+var logger = log4js.getLogger('dateFile');
 
 var app = (express)();
 
@@ -13,8 +25,24 @@ app.configure(function () {
     app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
+    app.use(function (req, res, next) {
+        logger.info([
+            req.headers['x-forwarded-for'] || req.client.remoteAddress,
+            new Date().toLocaleString(),
+            req.method,
+            req.url,
+            res.statusCode,
+            req.headers.referer || '-',
+            req.headers['user-agent'] || '-'
+        ].join('\t'));
+        next();
+    });
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
+    app.use(function (req, res, next) {
+        res.status(404);
+        res.render('404', { title: "お探しのページは存在しません。" });
+    });
     app.locals.pretty = true;
 });
 

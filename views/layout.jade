@@ -5,9 +5,10 @@ html
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
     link(rel='stylesheet', href='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css')
     link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css')
+    link(rel='stylesheet', href='/stylesheets/style.css')
     script(src='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js')
     script(src='//ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js')
-    link(rel='stylesheet', href='/stylesheets/style.css')
+    script(src='//code.jquery.com/jquery-2.0.0.min.js')
     script(src='//localhost:35729/livereload.js')
   body
     .wrapper
@@ -21,18 +22,15 @@ html
               li(class='#{ name === 'info' ? 'active' : '' }')
                 a(href='#{ name === 'info' ? '#' : 'info.html' }')
                   このサービスについて
-              li(class='#{ name === 'broadcast' ? 'active' : '' }')
-                a(href='#{ name === 'broadcast' ? '#' : 'broadcast.html' }')
-                  掲載方法
             a.nav.pull-right.brand(href='#{ name === 'index' ? '#' : '/' }')
-              |PeerCast Developer's YP(α)
+              |PeerCast Developer's YP(β)
       main.container
         block content
         .push
-    footer
-      .container
-        .row-fluid
-          .span12
-            |このサイトを利用して発生したいかなる問題もサイト運営者は責任を負いません
-            //a(href='terms.html') 利用規約
-            span.muted.pull-right © 2013 ぷろぐれ. All rights reserved
+    footer.container
+      .row-fluid
+        .span12
+          p.pull-right
+            span.muted.pull-right © 2013 <a href='https://twitter.com/progremaster'>ぷろぐれ</a>. All rights reserved
+          p このサイトを利用して発生したいかなる問題もサイト運営者は責任を負いません
+          //a(href='terms.html') 利用規約

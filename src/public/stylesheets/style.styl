@@ -25,7 +25,12 @@ footer {
   height: footerHeight - 1;
 }
 footer .row-fluid {
-  margin: 12px 0;
+  margin-top: 12px;
+}
+@media (max-width: 767px) {
+  footer .row-fluid {
+    margin-top: 3px;
+  }
 }
 
 /* Custom design
@@ -38,36 +43,44 @@ html, body {
   font-size: 200px;
 }
 
-.hero-unit i {
+.hero-unit.jumbo-tron i {
   font-size: 160px;
 }
-.hero-unit h1 {
+.hero-unit.jumbo-tron h1 {
   font-weight: bold;
   line-height: 1;
   font-size: 80px;
   letter-spacing: -2px;
 }
 @media (max-width: 979px) {
-  .hero-unit i {
+  .hero-unit.jumbo-tron i {
     font-size: 120px;
   }
-  .hero-unit h1 {
+  .hero-unit.jumbo-tron h1 {
     font-size: 60px;
   }
 }
 @media (max-width: 767px) {
-  .hero-unit i {
+  .hero-unit.jumbo-tron i {
     font-size: 100px;
   }
-  .hero-unit h1 {
+  .hero-unit.jumbo-tron h1 {
     font-size: 50px;
   }
 }
 @media (max-width: 480px) {
-  .hero-unit i {
+  .hero-unit.jumbo-tron i {
     font-size: 90px;
   }
-  .hero-unit h1 {
+  .hero-unit.jumbo-tron h1 {
     font-size: 45px;
   }
+}
+
+hr {
+  margin-top: 60px
+}
+.marketing .span4 {
+  margin-top: 40px
+  margin-bottom: 80px
 }

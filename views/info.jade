@@ -1,7 +1,9 @@
 extends layout
 
 block content
-  h1 チャンネルを視聴するには
+  h1 このサービスについて
+  hr
+  h2 視聴方法
   p
     :markdown
       PeerCast Developer's YPのチャンネルを視聴するには、まずお使いのパソコンにPeerCastをインストールします。
@@ -15,7 +17,15 @@ block content
       そして、[チャンネルリスト](/list.html)にアクセスし、ポートチェックを行なってください。
       ポートチェックに成功したら、お好きなチャンネルをクリックすると、再生が始まります。
   hr
-  h1 PeerCastとは
+  h2 掲載方法
+  h3 PeerCastで配信するには
+  p Under construction...
+  h3 Developer's YPに掲載するには
+  p 最新の<a href='https://github.com/progre/pecastarter5'>PecaStarter</a>を利用すると既存のYPと同じように使用できます。
+  p YPのアドレスは<strong style='margin: 0 10px'>root-dp.prgrssv.net</strong>を指定してください。
+  p ジャンルの先頭に<strong style='margin: 0 10px'>dp</strong>をつけてください。
+  hr
+  h2 PeerCastとは
   p
     :markdown
       PeerCast（ピアキャスト）はPeer to Peer型のリアルタイム動画配信ソフトウェアです。
@@ -27,16 +37,18 @@ block content
       PeerCastで配信されているチャンネルは、インターネット上の複数のYellowPages（イエローページ）で管理されています。
       ここDeveloper's YPの他にもいくつかのYellowPagesがあります。
 
-  p see also: 
-    a(href='http://listeners.reep.info/') Peca視聴者Wiki
   hr
-  h1 Developer's YPとは
+  h2 Developer's YPとは
   p
     :markdown
       Developer's YPは、ソフトウェア開発者の為に構築されたYellowPagesです。
 
-      Under construction...
-  h2 Pricing
+      今後予定しているGithub連携機能や、Twitter連携機能によって、
+      ソフトウェア開発者により良い配信環境を提供します。
+
+      また、今までPeerCastを利用したことの無い方にも利用しやすい環境を目指します。
+  hr
+  h3 Pricing
   .row
     .span12
       table.table.table-condensed.table-hover

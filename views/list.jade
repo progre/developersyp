@@ -1,12 +1,11 @@
 extends layout
 
 block content
-  p
-    |PeerCastを起動して、ボタンを押してください
-  p
-    .input-append
-      input.span1(type='number', min=1, max=65535, value=7144)
-      button.btn ポートチェック
+  .form-horizontal
+    .control-group
+      .control-label ポート:
+      .controls
+        input#port-input.input-small(type='number', min=1, max=65535, value=7144)
   table.table
     tr
       th.span1
@@ -17,13 +16,16 @@ block content
       tr
         td(style='text-align: center')
           |<br>
-          a(title='TCPポートを開放してポートチェックをクリックしてください') <del>Play</del>
-          // img(width=64,height=64,src='https://si0.twimg.com/profile_images/2750510672/43dd290bc6b670c4622fb96f6fa309a7.png')
+          - if (channel[1] !== '00000000000000000000000000000000')
+            a.play(href='http://localhost:7144/pls/#{channel[1]}?tip=#{channel[2]}') Play
+            // img(width=64,height=64,src='https://si0.twimg.com/profile_images/2750510672/43dd290bc6b670c4622fb96f6fa309a7.png')
+          - else
+            |-
         td
           div
-              |#{channel[0]}<br>
-              |[#{channel[4]} - #{channel[5]}]<br>
-              |「#{channel[17]}」
+            a(href=channel[3]) #{channel[0]}<br>
+            |[#{channel[4]} - #{channel[5]}]<br>
+            |「#{channel[17]}」
         td(style='text-align: center')
           |#{channel[6]} / #{channel[7]}<!--<br>
           |(..) Stats<br> -->
@@ -32,3 +34,22 @@ block content
           |#{channel[9]}<br>
           |#{channel[8]} kbps<!--<br>
           |Free -->
+
+  script
+    var portInput = $('#port-input');
+    portInput.change(function(a) {
+      setPort($(this).val());
+    });
+    portInput.keyup(function(a) {
+      portInput.change();
+    });
+    portInput.mouseup(function(a) {
+      portInput.change();
+    });
+
+    function setPort(port) {
+      $('.play').each(function() {
+        var play = $(this);
+        play.attr('href', play.attr('href').replace(/localhost:.*\//, 'localhost:' + port + '/'));
+      });
+    }

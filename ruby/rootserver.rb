@@ -2,6 +2,7 @@
 require './pcp.rb'
 require 'uri'
 require 'webrick'
+require 'logger'
 require 'cgi'
 require 'pp'
 
@@ -12,6 +13,7 @@ module PCP
     Packet  = Struct.new(:position,   :data)
     Host    = Struct.new(:session_id, :broadcast_id, :agent, :ip, :port, :version, :vp_version, :info)
     def initialize(host, port, agent_name=AgentName)
+      @logger = Logger.new('rootserver.log', 10)
       @host = host
       @port = port
       @channels = {}
@@ -77,42 +79,48 @@ module PCP
         ].join("<>") + "\r\n"
         @channels.each do |key, channel| 
           info_children = channel.info.children
-          host_children = channel.hosts.values[0].info.children
-          track_children = channel.track.children
           genre = info_children.select{|x|x.name=="gnre"}[0].value.force_encoding("utf-8")
           next unless genre =~ /^dp/
-          body += [
-            info_children.select{|x|x.name=="name"}[0].value.force_encoding("utf-8"), # チャンネル名
-            channel.channel_id, # チャンネルID
-            host_children[2].value.join(".") + ":" + host_children[3].value.to_s, # IP:Port
-            info_children.select{|x|x.name=="url"}[0].value.force_encoding("utf-8"), # コンタクトURL
-            genre[2..genre.length], # ジャンル
-            info_children.select{|x|x.name=="desc"}[0].value.force_encoding("utf-8").force_encoding("utf-8"), # 詳細
-            host_children[6].value, # 視聴数
-            host_children[7].value, # リレー数
-            info_children.select{|x|x.name=="bitr"}[0].value.to_s, # ビットレート
-            info_children.select{|x|x.name=="type"}[0].value.split(//u)[0..-2].join.force_encoding("utf-8"), # 形式 最後の文字を削除
-            track_children[1].value.force_encoding("utf-8"), # アーティスト
-            track_children[3].value.force_encoding("utf-8"), # アルバム
-            track_children[0].value.force_encoding("utf-8"), # タイトル
-            track_children[2].value.force_encoding("utf-8"), # URL
-            CGI.escape(info_children.select{|x|x.name=="name"}[0].value.force_encoding("utf-8")),
-            second_to_time(host_children[9].value),
-            "click",
-            info_children.select{|x|x.name=="cmnt"}[0].value.force_encoding("utf-8"),
-            0.to_s
-          ].join("<>") + "\r\n"
+          body += toIndexTxt(channel) + "\r\n"
         end
         res.body = body
       }
       server.start
-
     end
 
-    def second_to_time(sec)
-      m = sec / 60
-      h = m / 60
-      h.to_s + ":" + m.to_s
+    def toIndexTxt(channel)
+      info_children = channel.info.children
+      host_children = channel.hosts.values[0].info.children
+      track_children = channel.track.children
+      genre = info_children.select{|x|x.name=="gnre"}[0].value.force_encoding("utf-8")
+      [
+        info_children.select{|x|x.name=="name"}[0].value.force_encoding("utf-8"), # チャンネル名
+        channel.channel_id.to_s.upcase, # チャンネルID（大文字にする）
+        host_children[2].value.join(".") + ":" + host_children[3].value.to_s, # IP:Port
+        info_children.select{|x|x.name=="url"}[0].value.force_encoding("utf-8"), # コンタクトURL
+        genre[2..genre.length], # ジャンル
+        info_children.select{|x|x.name=="desc"}[0].value.force_encoding("utf-8").force_encoding("utf-8"), # 詳細
+        host_children[6].value, # 視聴数
+        host_children[7].value, # リレー数
+        info_children.select{|x|x.name=="bitr"}[0].value.to_s, # ビットレート
+        info_children.select{|x|x.name=="type"}[0].value.split(//u)[0..-2].join.force_encoding("utf-8"), # 形式 最後の文字を削除
+        track_children[1].value.force_encoding("utf-8"), # アーティスト
+        track_children[3].value.force_encoding("utf-8"), # アルバム
+        track_children[0].value.force_encoding("utf-8"), # タイトル
+        track_children[2].value.force_encoding("utf-8"), # URL
+        CGI.escape(info_children.select{|x|x.name=="name"}[0].value.force_encoding("utf-8")),
+        second_to_time(host_children[9].value),
+        "click",
+        info_children.select{|x|x.name=="cmnt"}[0].value.force_encoding("utf-8"),
+        0.to_s
+      ].join("<>")
+    end
+
+    def second_to_time(time)
+      sec = time / 60 / 60 / 1000
+      m = sec % 60
+      h = sec / 60
+      h.to_s + ":" + m.to_s.rjust(2, "0")
     end
 
     attr_reader :host, :port, :session_id, :client_threads
@@ -243,6 +251,10 @@ module PCP
           channel.track.update(track)
         elsif track then
           channel.track = track
+        end
+        begin
+          @logger.info(toIndexTxt(channel))
+        rescue
         end
       end
     end

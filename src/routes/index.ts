@@ -29,9 +29,6 @@ export function addRouting(app: ExpressApplication) {
     app.get('/info.html', (req, res) => {
         res.render('info', { name: 'info' });
     });
-    app.get('/broadcast.html', (req, res) => {
-        res.render('broadcast', { name: 'broadcast' });
-    });
     app.get('/terms.html', (req, res) => {
         res.render('terms', { name: 'terms' });
     });

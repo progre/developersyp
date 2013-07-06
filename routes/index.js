@@ -30,9 +30,6 @@ function addRouting(app) {
     app.get('/info.html', function (req, res) {
         res.render('info', { name: 'info' });
     });
-    app.get('/broadcast.html', function (req, res) {
-        res.render('broadcast', { name: 'broadcast' });
-    });
     app.get('/terms.html', function (req, res) {
         res.render('terms', { name: 'terms' });
     });
