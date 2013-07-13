@@ -1,4 +1,4 @@
-
+require 'nkf'
 require './pcp.rb'
 require 'uri'
 require 'webrick'
@@ -60,7 +60,7 @@ module PCP
           "DP - お知らせ",
           "00000000000000000000000000000000",
           "",
-          "http://yy59.60.kg/test/read.cgi/progre/1260118120/",
+          "http://dp.prgrssv.net/",
           "試験運用中",
           "",
           "-9",
@@ -74,12 +74,12 @@ module PCP
           CGI.escape("DP - お知らせ"),
           "0:00",
           "click",
-          "意見要望不具合報告等はコンタクトURLへ",
+          "",
           "0"
         ].join("<>") + "\r\n"
         @channels.each do |key, channel| 
           info_children = channel.info.children
-          genre = info_children.select{|x|x.name=="gnre"}[0].value.force_encoding("utf-8")
+          genre = ascii_to_utf8(info_children.select{|x|x.name=="gnre"}[0].value)
           next unless genre =~ /^dp/
           body += toIndexTxt(channel) + "\r\n"
         end
@@ -92,28 +92,42 @@ module PCP
       info_children = channel.info.children
       host_children = channel.hosts.values[0].info.children
       track_children = channel.track.children
-      genre = info_children.select{|x|x.name=="gnre"}[0].value.force_encoding("utf-8")
+      name = ascii_to_utf8(info_children.select{|x|x.name=="name"}[0].value)
+      genre = ascii_to_utf8(info_children.select{|x|x.name=="gnre"}[0].value)
       [
-        info_children.select{|x|x.name=="name"}[0].value.force_encoding("utf-8"), # チャンネル名
+        name, # チャンネル名
         channel.channel_id.to_s.upcase, # チャンネルID（大文字にする）
         host_children[2].value.join(".") + ":" + host_children[3].value.to_s, # IP:Port
-        info_children.select{|x|x.name=="url"}[0].value.force_encoding("utf-8"), # コンタクトURL
+        ascii_to_utf8(info_children.select{|x|x.name=="url"}[0].value), # コンタクトURL
         genre[2..genre.length], # ジャンル
-        info_children.select{|x|x.name=="desc"}[0].value.force_encoding("utf-8").force_encoding("utf-8"), # 詳細
+        ascii_to_utf8(info_children.select{|x|x.name=="desc"}[0].value), # 詳細
         host_children[6].value, # 視聴数
         host_children[7].value, # リレー数
         info_children.select{|x|x.name=="bitr"}[0].value.to_s, # ビットレート
-        info_children.select{|x|x.name=="type"}[0].value.split(//u)[0..-2].join.force_encoding("utf-8"), # 形式 最後の文字を削除
-        track_children[1].value.force_encoding("utf-8"), # アーティスト
-        track_children[3].value.force_encoding("utf-8"), # アルバム
-        track_children[0].value.force_encoding("utf-8"), # タイトル
-        track_children[2].value.force_encoding("utf-8"), # URL
-        CGI.escape(info_children.select{|x|x.name=="name"}[0].value.force_encoding("utf-8")),
+        ascii_to_utf8(info_children.select{|x|x.name=="type"}[0].value.split(//u)[0..-2].join), # 形式 最後の文字を削除
+        ascii_to_utf8(track_children[1].value), # アーティスト
+        ascii_to_utf8(track_children[3].value), # アルバム
+        ascii_to_utf8(track_children[0].value), # タイトル
+        ascii_to_utf8(track_children[2].value), # URL
+        CGI.escape(name),
         second_to_time(host_children[9].value),
         "click",
-        info_children.select{|x|x.name=="cmnt"}[0].value.force_encoding("utf-8"),
+        ascii_to_utf8(info_children.select{|x|x.name=="cmnt"}[0].value),
         0.to_s
       ].join("<>")
+    end
+
+    def ascii_to_utf8(ascii)
+      case NKF.guess(ascii)
+      when NKF::SJIS
+        ascii.force_encoding("sjis").encode("UTF-8")
+      when NKF::UTF8
+        ascii.force_encoding("UTF-8")
+      when NKF::ASCII
+        ascii.force_encoding("ascii")
+      else
+        "(format not supported)"
+      end
     end
 
     def second_to_time(time)
