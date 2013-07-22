@@ -3,16 +3,16 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
     develop: {
       server: {
-        file: 'app.js'
+        file: 'app.js',
+        nodeArgs: ['--debug']            // optional
       }
     },
     regarde: {
-      js: {
+      ts: {
         files: [
-            'app.js',
-            'routes/*.js'
+            'src/**/*.ts'
         ],
-        tasks: ['develop', 'delayed-livereload']
+        tasks: ['typescript']
       },
       stylus: {
         files: ['src/public/stylesheets/*.styl'],
@@ -39,7 +39,7 @@ module.exports = function(grunt) {
         dest: '',
         options: {
           //          module: 'amd', //or commonjs
-          //          target: 'es5', //or es3
+          target: 'es5', //or es3
           base_path: 'src',
           sourcemap: true,
           fullSourceMapPath: true
@@ -76,7 +76,6 @@ module.exports = function(grunt) {
       'livereload-start',
       'stylus',
       'typescript',
-      'develop',
       'regarde'
   ]);
 };

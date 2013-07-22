@@ -1,5 +1,5 @@
-/// <reference path="../d.ts/DefinitelyTyped/node/node.d.ts" />
-/// <reference path="../d.ts/DefinitelyTyped/express/express.d.ts" />
+/// <reference path="../DefinitelyTyped/node/node.d.ts" />
+/// <reference path="../DefinitelyTyped/express/express.d.ts" />
 
 import http = module('http');
 

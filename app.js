@@ -15,7 +15,7 @@ log4js.configure({
 });
 var logger = log4js.getLogger('dateFile');
 
-var app = (express)();
+var app = express();
 
 app.configure(function () {
     app.set('port', process.env.NODE_PORT || 80);
@@ -41,7 +41,7 @@ app.configure(function () {
     app.use(express.static(path.join(__dirname, 'public')));
     app.use(function (req, res, next) {
         res.status(404);
-        res.render('404', { title: "お探しのページは存在しません。" });
+        res.render('404', {});
     });
     app.locals.pretty = true;
 });

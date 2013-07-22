@@ -1,5 +1,5 @@
-/// <reference path="d.ts/DefinitelyTyped/node/node.d.ts"/>
-/// <reference path="d.ts/DefinitelyTyped/express/express.d.ts"/>
+/// <reference path="DefinitelyTyped/node/node.d.ts"/>
+/// <reference path="DefinitelyTyped/express/express.d.ts"/>
 
 import express = require('express');
 import http = module('http');
@@ -16,7 +16,7 @@ log4js.configure({
 });
 var logger = log4js.getLogger('dateFile');
 
-var app = (<any>express)();
+var app = express();
 
 app.configure(function () {
     app.set('port', process.env.NODE_PORT || 80);
