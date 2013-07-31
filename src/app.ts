@@ -9,12 +9,13 @@ import routes = module('routes/index');
 
 log4js.configure({
     appenders: [{
-        "type": "dateFile",
-        "filename": "logs/access.log",
-        "pattern": "-yyyy-MM-dd"
+        category: 'app',
+        type: 'dateFile',
+        filename: 'logs/access.log',
+        pattern: '-yyyy-MM-dd'
     }]
 });
-var logger = log4js.getLogger('dateFile');
+var logger = log4js.getLogger('app');
 
 var app = express();
 
