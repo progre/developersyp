@@ -1,7 +1,7 @@
 /// <reference path='DefinitelyTyped/log4js.d.ts'/>
 /// <reference path='DefinitelyTyped/node_patch.d.ts'/>
 
-import root = require('./rootserver');
+import root = require('./rootserver/rootserver');
 var pcpPort = parseInt(process.argv[2], 10);
 if (pcpPort == null)
     pcpPort = 7144;
