@@ -10,6 +10,19 @@ function httpRequestListener(
     req: http.ServerRequest, res: http.ServerResponse,
     channels: { [channelId: string]: ch.Channel; }, logger: log4js.Logger
     ) {
+    try {
+        onRequest(req, res, channels, logger);
+    } catch (e) {
+        logger.error('uncaughtException: ' + e + ', stack: ' + e.stack);
+        res.statusCode = 500;
+        res.write('500');
+        res.end();
+    }
+}
+function onRequest(
+    req: http.ServerRequest, res: http.ServerResponse,
+    channels: { [channelId: string]: ch.Channel; }, logger: log4js.Logger
+    ) {
     if (req.method !== 'GET') {
         res.statusCode = 405;
         res.end();
@@ -43,7 +56,7 @@ function httpRequestListener(
         var track = channel.track;
         slims.push(slim(channel.channel_id, info, host, track));
     }
-    res.write(JSON.stringify(channels));
+    res.write(JSON.stringify(slims));
     res.end();
 }
 
@@ -58,7 +71,7 @@ function slim(id: GID, info: pcp.Atom, host: ch.Host, track: pcp.Atom) {
         listeners: host.info.get(pcp.HOST_NUML),
         relays: host.info.get(pcp.HOST_NUMR),
         bitrate: info.get(pcp.CHAN_INFO_BITRATE),
-        type: (<string>info.get(pcp.CHAN_INFO_TYPE)).replace('\u0000', ''),
+        type: info.get(pcp.CHAN_INFO_TYPE),
         track: track == null ? null : {
             creator: track.get(pcp.CHAN_TRACK_CREATOR),
             album: track.get(pcp.CHAN_TRACK_ALBUM),

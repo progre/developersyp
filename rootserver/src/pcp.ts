@@ -148,7 +148,7 @@ export class Atom {
             case 'string':
                 if (this.content.readUInt8(this.content.length - 1) !== 0)
                     throw new Error('String must ends with null byte');
-                return this.content.toString('utf-8');
+                return this.content.slice(0, this.content.length - 1).toString('utf-8');
             case 'bytes':
                 return this.content;
             default:
@@ -293,7 +293,7 @@ Atom.PacketType[CHAN_BCID] = 'gid';
 Atom.PacketType[CHAN_PKT_TYPE] = 'bytes';
 Atom.PacketType[CHAN_PKT_POS] = 'int';
 Atom.PacketType[CHAN_PKT_DATA] = 'bytes';
-Atom.PacketType[CHAN_INFO_TYPE] = 'bytes';
+Atom.PacketType[CHAN_INFO_TYPE] = 'string';
 Atom.PacketType[CHAN_INFO_BITRATE] = 'int';
 Atom.PacketType[CHAN_INFO_GENRE] = 'string';
 Atom.PacketType[CHAN_INFO_NAME] = 'string';

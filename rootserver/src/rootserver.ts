@@ -1,5 +1,3 @@
-/// <reference path='../DefinitelyTyped/log4js.d.ts'/>
-/// <reference path='../DefinitelyTyped/node_patch.d.ts'/>
 import net = require('net');
 import http = require('http');
 import log4js = require('log4js');
@@ -15,13 +13,13 @@ log4js.configure({
         {
             category: 'root-pcp',
             type: 'dateFile',
-            filename: 'logs/root-pcp.log',
+            filename: 'log/root-pcp.log',
             pattern: '-yyyy-MM-dd'
         },
         {
             category: 'root-http',
             type: 'dateFile',
-            filename: 'logs/root-http.log',
+            filename: 'log/root-http.log',
             pattern: '-yyyy-MM-dd'
         }]
 });
@@ -35,7 +33,7 @@ export class RootServer {
     private _sessionId = GID.generate();
     private channels: { [channelId: string]: ch.Channel; } = {};
 
-    constructor(private pcpPort: number, private httpPort) {
+    constructor(private pcpPort: number, private httpPort: number) {
     }
 
     get sessionId() { return this._sessionId; }
@@ -44,14 +42,14 @@ export class RootServer {
         net.createServer(
             (client: NodeSocket2) => new PcpServerSocket(this, client, pcpLogger)
             ).listen(this.pcpPort, () => {
-                pcpLogger.info('pcp-server bound');
+                pcpLogger.info('pcp-server bound. port: ' + this.pcpPort);
             });
 
-        http.createServer(
-            (req, res) => httpRequestListener(req, res, this.channels, httpLogger)
-            ).listen(this.httpPort, () => {
-                httpLogger.info('http-server bound');
-            });
+        http.createServer((req, res) =>
+            httpRequestListener(req, res, this.channels, httpLogger)
+        ).listen(this.httpPort, () => {
+            httpLogger.info('http-server bound. port: ' + this.httpPort);
+        });
     }
 
     putHost(host: ch.Host, atom: pcp.Atom) {
@@ -85,5 +83,3 @@ export class RootServer {
             channel => channel.broadcast_id.equals(broadcastId));
     }
 }
-
-new RootServer(10000, 10001).listen();

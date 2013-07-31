@@ -3,3 +3,7 @@ public/components
 .sass-cache
 DefinitelyTyped/
 *.map
+*.js
+*.log
+
+!Gruntfile.js
