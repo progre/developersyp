@@ -62,7 +62,7 @@ function onRequest(
 
 function slim(id: GID, info: pcp.Atom, host: ch.Host, track: pcp.Atom) {
     return {
-        id: id.to_s(),
+        id: id.toString(),
         info: {
             name: info.get(pcp.CHAN_INFO_NAME),
             url: info.get(pcp.CHAN_INFO_URL),

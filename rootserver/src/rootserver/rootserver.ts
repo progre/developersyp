@@ -57,7 +57,7 @@ export class RootServer {
         var channelId: GID = atom.get(pcp.HOST_CHANID);
         if (channelId == null)
             throw new Error('channel id not found');
-        var channel = this.channels[channelId.to_s()];
+        var channel = this.channels[channelId.toString()];
         if (channel == null || !sessionId.equals(host.session_id))
             return;
         channel.putHost(sessionId, host, atom);
@@ -67,10 +67,10 @@ export class RootServer {
         var channelId: GID = atom.get(pcp.CHAN_ID);
         if (channelId == null)
             throw new Error('channel id not found');
-        var channel = this.channels[channelId.to_s()];
+        var channel = this.channels[channelId.toString()];
         if (channel == null && host.broadcast_id != null) {
             channel = new ch.Channel(channelId, host.broadcast_id, null, null, {});
-            this.channels[channelId.to_s()] = channel;
+            this.channels[channelId.toString()] = channel;
         }
         if (!channel.broadcast_id.equals(host.broadcast_id)) {
             return;

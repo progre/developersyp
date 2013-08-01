@@ -29,9 +29,9 @@ export class Channel {
     }
 
     putHost(sessionId: GID, host: Host, atom: pcp.Atom) {
-        this.hosts[sessionId.to_s()] = host;
-        this.hosts[sessionId.to_s()].vp_version = atom.get(pcp.HOST_VERSION_VP);
-        this.hosts[sessionId.to_s()].info = atom;
+        this.hosts[sessionId.toString()] = host;
+        this.hosts[sessionId.toString()].vp_version = atom.get(pcp.HOST_VERSION_VP);
+        this.hosts[sessionId.toString()].info = atom;
     }
 }
 
