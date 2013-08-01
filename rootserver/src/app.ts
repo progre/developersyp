@@ -10,8 +10,3 @@ if (httpPort == null)
     httpPort = 7146;
 
 new root.RootServer(pcpPort, httpPort).listen();
-
-process.on('ENOSYS', () => {
-    console.log('catch: ENOSYS');
-    process.exit(0);
-});
