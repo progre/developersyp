@@ -1,3 +1,5 @@
+import putil = require('./util');
+
 /** 16バイトのデータ */
 export = GID;
 class GID {
@@ -11,8 +13,8 @@ class GID {
 
     to_s() {
         var data = '';
-        for (var i = 0; i < 4; i++) {
-            data += ('00000000' + this._id.readUInt32LE(i * 4).toString(16)).slice(-8);
+        for (var i = 0; i < 16; i++) {
+            data += putil.padLeft(this._id.readUInt8(i).toString(16).toUpperCase(), 2, '0');
         }
         return data;
     }

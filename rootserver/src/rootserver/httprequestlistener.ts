@@ -62,25 +62,29 @@ function onRequest(
 
 function slim(id: GID, info: pcp.Atom, host: ch.Host, track: pcp.Atom) {
     return {
-        ip: host == null ? '0.0.0.0:0' : joinIpPort(host.ip, host.port),
-        id: id,
-        name: info.get(pcp.CHAN_INFO_NAME),
-        url: info.get(pcp.CHAN_INFO_URL),
-        genre: info.get(pcp.CHAN_INFO_GENRE),
-        desc: info.get(pcp.CHAN_INFO_DESC),
-        listeners: host.info.get(pcp.HOST_NUML),
-        relays: host.info.get(pcp.HOST_NUMR),
-        bitrate: info.get(pcp.CHAN_INFO_BITRATE),
-        type: info.get(pcp.CHAN_INFO_TYPE),
+        id: id.to_s(),
+        info: {
+            name: info.get(pcp.CHAN_INFO_NAME),
+            url: info.get(pcp.CHAN_INFO_URL),
+            genre: info.get(pcp.CHAN_INFO_GENRE),
+            desc: info.get(pcp.CHAN_INFO_DESC),
+            bitrate: info.get(pcp.CHAN_INFO_BITRATE),
+            type: info.get(pcp.CHAN_INFO_TYPE),
+            comment: info.get(pcp.CHAN_INFO_COMMENT)
+        },
+        host: {
+            ip: host == null ? '0.0.0.0:0' : joinIpPort(host.ip, host.port),
+            listeners: host.info.get(pcp.HOST_NUML),
+            relays: host.info.get(pcp.HOST_NUMR),
+            direct: ((<number>host.info.get(pcp.HOST_FLAGS1)) & pcp.HOST_FLAGS1_DIRECT) != 0
+        },
         track: track == null ? null : {
             creator: track.get(pcp.CHAN_TRACK_CREATOR),
             album: track.get(pcp.CHAN_TRACK_ALBUM),
             title: track.get(pcp.CHAN_TRACK_TITLE),
-            url: track.get(pcp.CHAN_TRACK_URL)
+            url: track.get(pcp.CHAN_TRACK_URL),
+            uptime: track.get(pcp.HOST_UPTIME)
         },
-        uptime: track.get(pcp.HOST_UPTIME),
-        comment: info.get(pcp.CHAN_INFO_COMMENT),
-        direct: (<number>host.info.get(pcp.HOST_FLAGS1)) & pcp.HOST_FLAGS1_DIRECT
     };
 }
 
