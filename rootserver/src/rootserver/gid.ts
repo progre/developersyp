@@ -19,18 +19,6 @@ class GID {
         return data;
     }
 
-    static from_string(str: string) {
-        if (str.length != 32) {
-            throw new Error('•¶š—ñ‚Ì’·‚³‚ªˆÙí');
-        }
-        var id = new Buffer(16);
-        for (var i = 0; i < 4; i++) {
-            var begin = i * 8;
-            id.writeUInt32LE(parseInt(str.slice(begin, begin + 8), 16), i * 4);
-        }
-        return new GID(id);
-    }
-
     static generate() {
         var id = new Buffer(16);
         for (var i = 0; i < 4; i++) {
