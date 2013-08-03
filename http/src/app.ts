@@ -1,26 +1,33 @@
 /// <reference path="DefinitelyTyped/node/node.d.ts"/>
 /// <reference path="DefinitelyTyped/express/express.d.ts"/>
 
+import fs = require('fs');
 import express = require('express');
-import http = module('http');
-import path = module('path');
+import http = require('http');
+var path = require('path');
 var log4js = require('log4js');
-import routes = module('routes/index');
+import routes = require('routes/index');
 
 log4js.configure({
     appenders: [{
         category: 'app',
         type: 'dateFile',
-        filename: 'logs/access.log',
+        filename: 'log/access.log',
         pattern: '-yyyy-MM-dd'
     }]
 });
+if (!fs.existsSync('log')) {
+    fs.mkdirSync('log', '777');
+}
 var logger = log4js.getLogger('app');
+
+var port = parseInt(process.argv[2], 10);
+if (port == null)
+    port = 80;
 
 var app = express();
 
 app.configure(function () {
-    app.set('port', process.env.NODE_PORT || 80);
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
     app.use(express.favicon());
@@ -45,15 +52,17 @@ app.configure(function () {
         res.status(404);
         res.render('404', {});
     });
-    app.locals.pretty = true; // 綺麗な.htmlを吐く
+    //app.locals.pretty = true; // 綺麗な.htmlを吐く
 });
+
+for (var path in routes.routings) {
+    app.get(path, routes.routings[path]);
+}
 
 app.configure('development', function () {
     app.use(express.errorHandler());
 });
 
-routes.addRouting(app);
-
-http.createServer(app).listen(app.get('port'), function () {
-    console.log("Express server listening on port " + app.get('port'));
+http.createServer(app).listen(port, function () {
+    console.log("Express server listening on port " + port);
 });

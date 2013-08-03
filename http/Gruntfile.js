@@ -4,7 +4,8 @@ module.exports = function(grunt) {
     develop: {
       server: {
         file: 'app.js',
-        nodeArgs: ['--debug']            // optional
+        nodeArgs: ['--debug'],            // optional
+        args: [8080]
       }
     },
     regarde: {
@@ -76,6 +77,7 @@ module.exports = function(grunt) {
       'livereload-start',
       'stylus',
       'typescript',
+      'develop',
       'regarde'
   ]);
 };
