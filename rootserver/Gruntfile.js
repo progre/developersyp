@@ -1,11 +1,14 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    secret: grunt.file.readJSON('secret.json'),
     watch: {
       ts: {
         files: ['src/**/*.ts'],
         tasks: ['typescript', 'develop'],
-        options: { nospawn: true }
+        options: {
+          nospawn: true
+        }
       }
     },
     develop: {
@@ -38,16 +41,50 @@ module.exports = function(grunt) {
           return 'tsd install ' + dependencies.join(' ');
         }
       }
+    },
+    copy: {
+      deploy: {
+        files: [{
+          expand: true,
+          src: ['**/*.js', 'package.json', '!node_modules/**', '!Gruntfile.js'],
+          dest: 'dist/',
+          filter: 'isFile'
+        }]
+      }
+    },
+    sftp: {
+      deploy: {
+        files: {
+          "dist/": "dist/**"
+        },
+        options: {
+          createDirectories: true,
+          srcBasePath: 'dist/',
+          host: '<%= secret.host %>',
+          port: '<%= secret.port %>',
+          username: '<%= secret.username %>',
+          privateKey: grunt.file.read(process.env['HOME'] + '/.ssh/id_rsa'),
+          passphrase: '<%= secret.passphrase %>',
+          path: '<%= secret.path %>'
+        }
+      }
     }
   });
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-develop');
   grunt.loadNpmTasks('grunt-typescript');
   grunt.loadNpmTasks('grunt-exec');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-ssh');
 
   grunt.registerTask('default', [
     'typescript',
     'develop',
     'watch'
+  ]);
+
+  grunt.registerTask('deploy', [
+    'copy',
+    'sftp'
   ]);
 };

@@ -14,6 +14,8 @@
     "grunt-develop": "~0.1.1",
     "grunt-exec": "~0.4.1",
     "grunt-typescript": ">=0.2.0",
-    "grunt-contrib-watch": "~0.5.1"
+    "grunt-contrib-watch": "~0.5.1",
+    "grunt-ssh": "~0.6.2",
+    "grunt-contrib-copy": "~0.4.1"
   }
 }

@@ -1,8 +1,10 @@
 node_modules/
+dist/
 public/components
 .sass-cache
 *.map
 *.js
 *.log*
+secret.json
 
 !Gruntfile.js
