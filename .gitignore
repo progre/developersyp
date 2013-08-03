@@ -3,6 +3,6 @@ public/components
 .sass-cache
 *.map
 *.js
-*.log
+*.log*
 
 !Gruntfile.js
