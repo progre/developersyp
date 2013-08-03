@@ -1,3 +1,4 @@
+import fs = require('fs');
 import net = require('net');
 import http = require('http');
 import log4js = require('log4js');
@@ -23,8 +24,6 @@ log4js.configure({
             pattern: '-yyyy-MM-dd'
         }]
 });
-var pcpLogger = log4js.getLogger('root-pcp');
-var httpLogger = log4js.getLogger('root-http');
 
 export interface NodeSocket2 extends net.NodeSocket, ReadableStream2 {
 }
@@ -41,6 +40,11 @@ export class RootServer {
     get sessionId() { return this._sessionId; }
 
     listen() {
+        if (!fs.existsSync('log')) {
+            fs.mkdirSync('log', '777');
+        }
+
+        var pcpLogger = log4js.getLogger('root-pcp');
         this.pcp = net.createServer((client: NodeSocket2) =>
             new PcpServerSocket(this, client, pcpLogger)
             );
@@ -48,6 +52,7 @@ export class RootServer {
             pcpLogger.info('pcp-server bound. port: ' + this.pcpPort);
         });
 
+        var httpLogger = log4js.getLogger('root-http');
         this.http = http.createServer((req, res) =>
             httpRequestListener(req, res, this.channels, httpLogger)
             );

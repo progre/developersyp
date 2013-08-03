@@ -246,7 +246,7 @@ export class Atom {
         var array = ip.reverse();
         this.content = new Buffer(array.length);
         for (var i = 0, len = array.length; i < len; i++) {
-            this.content.writeInt8(array[i], i);
+            this.content.writeUInt8(array[i], i);
         }
     }
 

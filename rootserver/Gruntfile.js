@@ -87,6 +87,7 @@ module.exports = function(grunt) {
   ]);
 
   grunt.registerTask('deploy', [
+    'typescript',
     'copy',
     'sftp'
   ]);
