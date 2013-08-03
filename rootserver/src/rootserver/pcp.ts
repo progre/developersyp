@@ -52,12 +52,12 @@ var BCST_GROUP_RELAYS = 4;
 export var BCST_CHANID = 'cid';
 export var BCST_VERSION = 'vers';
 export var BCST_VERSION_VP = 'vrvp';
-var BCST_VERSION_EX_PREFIX = 'vexp';
-var BCST_VERSION_EX_NUMBER = 'vexn';
+export var BCST_VERSION_EX_PREFIX = 'vexp';
+export var BCST_VERSION_EX_NUMBER = 'vexn';
 export var HOST = 'host';
 export var HOST_ID = 'id';
-var HOST_IP = 'ip';
-var HOST_PORT = 'port';
+export var HOST_IP = 'ip';
+export var HOST_PORT = 'port';
 export var HOST_CHANID = 'cid';
 export var HOST_NUML = 'numl';
 export var HOST_NUMR = 'numr';
@@ -152,7 +152,7 @@ export class Atom {
             case 'bytes':
                 return this.content;
             default:
-                throw new Error('Unknown type: ' + type);
+                throw new Error('Unknown type: { name: ' + this.name + ', type: ' + type + ', content: ' + this.content.toString('utf-8') + ' }');
         }
     }
 
@@ -196,7 +196,7 @@ export class Atom {
                 this.content.writeUInt16LE(<number>v, 0);
                 break;
             case 'string':
-                this.content = new Buffer((<string>v).length + 1);
+                this.content = new Buffer(Buffer.byteLength(<string>v) + 1);
                 this.content.write(<string>v);
                 this.content.writeUInt8(0, this.content.length - 1);
                 break;
@@ -339,3 +339,5 @@ Atom.PacketType[BCST_VERSION_EX_PREFIX] = 'bytes';
 Atom.PacketType[BCST_VERSION_EX_NUMBER] = 'short';
 Atom.PacketType[HOST_VERSION_EX_PREFIX] = 'bytes';
 Atom.PacketType[HOST_VERSION_EX_NUMBER] = 'short';
+Atom.PacketType['styp'] = 'string';
+Atom.PacketType['sext'] = 'string';

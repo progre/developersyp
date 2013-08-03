@@ -53,14 +53,17 @@ function onRequest(
             continue;
         }
         var host = putil.firstOrUndefined(channel.hosts);
-        var track = channel.track;
-        slims.push(slim(channel.channel_id, info, host, track));
+        if (host == null) {
+            logger.error('host is null. ' + JSON.stringify(channel));
+            continue;
+        }
+        slims.push(slim(channel.channel_id, info, host.info, channel.track));
     }
     res.write(JSON.stringify(slims));
     res.end();
 }
 
-function slim(id: GID, info: pcp.Atom, host: ch.Host, track: pcp.Atom) {
+function slim(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
     return {
         id: id.toString(),
         info: {
@@ -73,21 +76,38 @@ function slim(id: GID, info: pcp.Atom, host: ch.Host, track: pcp.Atom) {
             comment: info.get(pcp.CHAN_INFO_COMMENT)
         },
         host: {
-            ip: host == null ? '0.0.0.0:0' : joinIpPort(host.ip, host.port),
-            listeners: host.info.get(pcp.HOST_NUML),
-            relays: host.info.get(pcp.HOST_NUMR),
-            direct: ((<number>host.info.get(pcp.HOST_FLAGS1)) & pcp.HOST_FLAGS1_DIRECT) != 0
+            ip: joinIpPort(hostInfo.get(pcp.HOST_IP)[0], hostInfo.get(pcp.HOST_PORT)[0]),
+            listeners: hostInfo.get(pcp.HOST_NUML),
+            relays: hostInfo.get(pcp.HOST_NUMR),
+            direct: ((<number>hostInfo.get(pcp.HOST_FLAGS1)) & pcp.HOST_FLAGS1_DIRECT) != 0,
+            uptime: hostInfo.get(pcp.HOST_UPTIME)
         },
         track: track == null ? null : {
             creator: track.get(pcp.CHAN_TRACK_CREATOR),
             album: track.get(pcp.CHAN_TRACK_ALBUM),
             title: track.get(pcp.CHAN_TRACK_TITLE),
             url: track.get(pcp.CHAN_TRACK_URL),
-            uptime: track.get(pcp.HOST_UPTIME)
         },
     };
 }
 
-function joinIpPort(ip: string, port: number) {
-    return putil.ifNullThen(ip, '0.0.0.0') + ':' + putil.ifNullThen(port, 0);
+function joinIpPort(ip: number[], port: number) {
+    return putil.ifNullThen(ip, [0, 0, 0, 0]).join('.') + ':' + putil.ifNullThen(port, 0);
+}
+
+function firstGlobalIP(ips: number[][], ports: number[]) {
+    for (var i = 0, len = ips.length; i < len; i++) {
+        if (isPrivateIP(ips[i]))
+            continue;
+        return joinIpPort(ips[i], ports[i]);
+    }
+}
+
+function isPrivateIP(ip: number[]) {
+    if (ip[0] === 10
+        || ip[0] === 172 && 16 <= ip[1] && ip[1] <= 31
+        || ip[0] === 192 && ip[1] === 168) {
+        return true;
+    }
+    return false;
 }

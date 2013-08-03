@@ -32,6 +32,8 @@ export interface NodeSocket2 extends net.NodeSocket, ReadableStream2 {
 export class RootServer {
     private _sessionId = GID.generate();
     private channels: { [channelId: string]: ch.Channel; } = {};
+    private pcp: net.Server;
+    private http: http.Server;
 
     constructor(private pcpPort: number, private httpPort: number) {
     }
@@ -39,17 +41,24 @@ export class RootServer {
     get sessionId() { return this._sessionId; }
 
     listen() {
-        net.createServer(
-            (client: NodeSocket2) => new PcpServerSocket(this, client, pcpLogger)
-            ).listen(this.pcpPort, () => {
-                pcpLogger.info('pcp-server bound. port: ' + this.pcpPort);
-            });
+        this.pcp = net.createServer((client: NodeSocket2) =>
+            new PcpServerSocket(this, client, pcpLogger)
+            );
+        this.pcp.listen(this.pcpPort, () => {
+            pcpLogger.info('pcp-server bound. port: ' + this.pcpPort);
+        });
 
-        http.createServer((req, res) =>
+        this.http = http.createServer((req, res) =>
             httpRequestListener(req, res, this.channels, httpLogger)
-        ).listen(this.httpPort, () => {
+            );
+        this.http.listen(this.httpPort, () => {
             httpLogger.info('http-server bound. port: ' + this.httpPort);
         });
+    }
+
+    destroy() {
+        this.pcp.close();
+        this.http.close();
     }
 
     putHost(host: ch.Host, atom: pcp.Atom) {

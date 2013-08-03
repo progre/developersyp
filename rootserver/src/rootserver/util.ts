@@ -19,7 +19,7 @@ export function deleteIf<T>(array: any, filter: (item: T) => boolean) {
 export function deleteIf2<T>(array: { [key: string]: T }, filter: (item: T) => boolean) {
     for (var key in array) {
         if (filter(array[key])) {
-            array[key] = null;
+            delete array[key];
         }
     }
 }

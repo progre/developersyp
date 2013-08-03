@@ -1,17 +1,18 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    watch: {
+      ts: {
+        files: ['src/**/*.ts'],
+        tasks: ['typescript', 'develop'],
+        options: { nospawn: true }
+      }
+    },
     develop: {
       server: {
         file: 'app.js',
         nodeArgs: ['--debug'],
         args: [7140, 7141]
-      }
-    },
-    watch: {
-      ts: {
-        files: ['src/**/*.ts'],
-        tasks: ['typescript']
       }
     },
     typescript: {
@@ -39,10 +40,10 @@ module.exports = function(grunt) {
       }
     }
   });
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-develop');
   grunt.loadNpmTasks('grunt-typescript');
   grunt.loadNpmTasks('grunt-exec');
-  grunt.loadNpmTasks('grunt-contrib-watch');
 
   grunt.registerTask('default', [
     'typescript',

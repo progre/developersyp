@@ -90,6 +90,10 @@ class PcpServerSocket {
             case pcp.QUIT:
                 this.onQuit();
                 break;
+            case pcp.BCST_VERSION_EX_PREFIX:
+            case pcp.BCST_VERSION_EX_NUMBER:
+                // スルー
+                break;
             default:
                 this.logger.error(this.client.remoteAddress + ' | Unsupported type: ' + atom.name);
                 break;

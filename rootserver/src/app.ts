@@ -9,4 +9,9 @@ var httpPort = parseInt(process.argv[3], 10);
 if (httpPort == null)
     httpPort = 7146;
 
-new root.RootServer(pcpPort, httpPort).listen();
+var rootServer = new root.RootServer(pcpPort, httpPort);
+rootServer.listen();
+process.on('SIGINT', () => {
+    rootServer.destroy();
+    console.log('Got SIGINT. server destroy.')
+});
