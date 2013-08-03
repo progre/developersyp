@@ -46,7 +46,10 @@ module.exports = function(grunt) {
       deploy: {
         files: [{
           expand: true,
-          src: ['**/*.js', 'package.json', '!node_modules/**', '!Gruntfile.js'],
+          src: [
+            '**/*.js', 'package.json',
+            '!dist/**', '!node_modules/**', '!Gruntfile.js'
+          ],
           dest: 'dist/',
           filter: 'isFile'
         }]
