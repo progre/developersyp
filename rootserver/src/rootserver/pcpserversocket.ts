@@ -10,6 +10,7 @@ var AGENT_NAME = 'DP';
 
 export = PcpServerSocket;
 class PcpServerSocket {
+    private ip: string;
     private pcpReader: PcpReader = new PcpReader();
     private state = ServerState.WAIT_HELO;
     private host: ch.Host;
@@ -19,16 +20,27 @@ class PcpServerSocket {
         private client: root.NodeSocket2,
         private logger: log4js.Logger
         ) {
+        this.ip = client.remoteAddress + ':' + client.remotePort;
+        logger.info('client connected. ' + this.ip);
         client.on('readable', () => {
             try {
                 this.onReadable();
             } catch (e) {
-                logger.error('uncaughtException: ' + e + ', stack: ' + e.stack);
+                logger.error('uncaughtException: ' + e.stack || e);
                 client.destroy();
             }
         });
+        client.on('error', (e: { code: string; errno: string; syscall: string }) => {
+            this.logger.info('client error. ' + JSON.stringify(e));
+        });
         client.on('end', () => {
-            this.logger.info('client disconnected');
+            this.logger.info('client end. ' + this.ip);
+        });
+        client.on('close', () => {
+            // 正常に通信していればここでremoveする必要はないはず
+            if (this.host != null && this.host.broadcast_id != null)
+                this.server.removeChannel(this.host);
+            this.logger.info('client close. ' + this.ip);
         });
     }
 
@@ -72,7 +84,7 @@ class PcpServerSocket {
         oleh.put(pcp.HELO_SESSIONID, this.server.sessionId);
         oleh.put(pcp.HELO_VERSION, 1218);
         oleh.put(pcp.HELO_REMOTEIP, this.client.remoteAddress);
-        oleh.put(pcp.HELO_PORT, 0); // .rbだとnilが入っていた？
+        oleh.put(pcp.HELO_PORT, 7144); // .rbだとnilが入っていた？
         oleh.writeTo(this.client);
     }
 
@@ -82,17 +94,16 @@ class PcpServerSocket {
                 this.on_bcst(atom);
                 break;
             case pcp.HOST:
-                this.on_host(atom);
+                if ((atom.get(pcp.HOST_FLAGS1) & pcp.HOST_FLAGS1_RECV) === 0)
+                    this.server.removeChannel(atom.get(pcp.HOST_CHANID));
+                this.server.putHost(this.host, atom);
                 break;
             case pcp.CHAN:
-                this.on_chan(atom);
+                this.server.addChannel(this.host, atom);
                 break;
             case pcp.QUIT:
-                this.onQuit();
-                break;
-            case pcp.BCST_VERSION_EX_PREFIX:
-            case pcp.BCST_VERSION_EX_NUMBER:
-                // スルー
+                if (this.host != null && this.host.broadcast_id != null)
+                    this.server.removeChannel(this.host);
                 break;
             default:
                 this.logger.error(this.client.remoteAddress + ' | Unsupported type: ' + atom.name);
@@ -111,25 +122,14 @@ class PcpServerSocket {
                 case pcp.BCST_CHANID:
                 case pcp.BCST_VERSION:
                 case pcp.BCST_VERSION_VP:
+                case pcp.BCST_VERSION_EX_PREFIX:
+                case pcp.BCST_VERSION_EX_NUMBER:
                     break;
                 default:
                     this.process_atom(c);
                     break;
             }
         });
-    }
-
-    private on_host(atom: pcp.Atom) {
-        this.server.putHost(this.host, atom);
-    }
-
-    private on_chan(atom: pcp.Atom) {
-        this.server.addChannel(this.host, atom);
-    }
-
-    private onQuit() {
-        if (this.host != null && this.host.broadcast_id != null)
-            this.server.removeChannel(this.host.broadcast_id);
     }
 }
 

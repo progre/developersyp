@@ -1,7 +1,7 @@
 import http = require('http');
 import putil = require('../common/util');
 
-var rootServer = 'http://dp.prgrssv.net:10001/snsbt_edimt6wfgkz_y4cmyr-zjru9s449_ybdw8wyt56c3nuggam8428jwm5269';
+var rootServer = 'http://127.0.0.1:7180/snsbt_edimt6wfgkz_y4cmyr-zjru9s449_ybdw8wyt56c3nuggam8428jwm5269';
 export var routings = {
     '/': (req, res) => {
         res.render('index', { name: 'index' });

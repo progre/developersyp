@@ -1,17 +1,18 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    secret: grunt.file.readJSON('secret.json'),
     develop: {
       server: {
         file: 'app.js',
-        nodeArgs: ['--debug'],            // optional
+        nodeArgs: ['--debug'], // optional
         args: [8080]
       }
     },
-    regarde: {
+    watch: {
       ts: {
         files: [
-            'src/**/*.ts'
+          'src/**/*.ts'
         ],
         tasks: ['typescript']
       },
@@ -52,9 +53,39 @@ module.exports = function(grunt) {
       tsd: {
         cmd: function() {
           var dependencies = [
-              'express', 'node'
+            'express', 'node'
           ];
           return 'tsd install ' + dependencies.join(' ');
+        }
+      }
+    },
+    copy: {
+      deploy: {
+        files: [{
+          expand: true,
+          src: [
+            'public/**', 'views/**', '**/*.js', 'package.json',
+            '!dist/**', '!node_modules/**', '!Gruntfile.js'
+          ],
+          dest: 'dist/',
+          filter: 'isFile'
+        }]
+      }
+    },
+    sftp: {
+      deploy: {
+        files: {
+          "dist/": "dist/**"
+        },
+        options: {
+          createDirectories: true,
+          srcBasePath: 'dist/',
+          host: '<%= secret.host %>',
+          port: '<%= secret.port %>',
+          username: '<%= secret.username %>',
+          privateKey: grunt.file.read(process.env['HOME'] + '/.ssh/id_rsa'),
+          passphrase: '<%= secret.passphrase %>',
+          path: '<%= secret.path %>'
         }
       }
     }
@@ -67,17 +98,26 @@ module.exports = function(grunt) {
     }, 500);
   });
   grunt.loadNpmTasks('grunt-develop');
-  grunt.loadNpmTasks('grunt-regarde');
+  grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-livereload');
   grunt.loadNpmTasks('grunt-contrib-stylus');
   grunt.loadNpmTasks('grunt-typescript');
   grunt.loadNpmTasks('grunt-exec');
+  grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-ssh');
 
   grunt.registerTask('default', [
-      'livereload-start',
-      'stylus',
-      'typescript',
-      'develop',
-      'regarde'
+    'livereload-start',
+    'stylus',
+    'typescript',
+    'develop',
+    'watch'
+  ]);
+
+  grunt.registerTask('deploy', [
+    'stylus',
+    'typescript',
+    'copy',
+    'sftp'
   ]);
 };

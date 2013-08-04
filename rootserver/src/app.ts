@@ -3,11 +3,11 @@
 
 import root = require('./rootserver/rootserver');
 var pcpPort = parseInt(process.argv[2], 10);
-if (pcpPort == null)
+if (isNaN(pcpPort))
     pcpPort = 7144;
 var httpPort = parseInt(process.argv[3], 10);
-if (httpPort == null)
-    httpPort = 7146;
+if (isNaN(httpPort))
+    httpPort = 7180;
 
 var rootServer = new root.RootServer(pcpPort, httpPort);
 rootServer.listen();

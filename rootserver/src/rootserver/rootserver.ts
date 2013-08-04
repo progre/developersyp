@@ -48,6 +48,12 @@ export class RootServer {
         this.pcp = net.createServer((client: NodeSocket2) =>
             new PcpServerSocket(this, client, pcpLogger)
             );
+        this.pcp.on('error', e => {
+            pcpLogger.info('pcp-server error. ' + JSON.stringify(e));
+        });
+        this.pcp.on('close', () => {
+            pcpLogger.info('pcp-server close.');
+        });
         this.pcp.listen(this.pcpPort, () => {
             pcpLogger.info('pcp-server bound. port: ' + this.pcpPort);
         });
@@ -92,8 +98,17 @@ export class RootServer {
         channel.update(atom);
     }
 
-    removeChannel(broadcastId: GID) {
-        putil.deleteIf2(this.channels,
-            channel => channel.broadcast_id.equals(broadcastId));
+    removeChannel(host: ch.Host);
+    removeChannel(channelId: GID);
+    removeChannel(arg: any) {
+        if (arg instanceof ch.Host) {
+            putil.deleteIf2(this.channels,
+                channel => channel.broadcast_id.equals((<ch.Host>arg).broadcast_id));
+            return;
+        } else {
+            putil.deleteIf2(this.channels,
+                channel => channel.channel_id.equals(<GID>arg));
+            return;
+        }
     }
 }
