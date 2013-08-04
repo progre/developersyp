@@ -1,13 +1,39 @@
 import http = require('http');
 import putil = require('../common/util');
 
-var rootServer = 'http://127.0.0.1:7180/snsbt_edimt6wfgkz_y4cmyr-zjru9s449_ybdw8wyt56c3nuggam8428jwm5269';
+var ROOT_SERVER = 'http://127.0.0.1:7180/snsbt_edimt6wfgkz_y4cmyr-zjru9s449_ybdw8wyt56c3nuggam8428jwm5269';
+var SERVER_COMMENT = {
+    id: '00000000000000000000000000000000',
+    info: {
+        name: 'DP - お知らせ',
+        url: 'http://dp.prgrssv.net/',
+        genre: '試験運用中',
+        desc: '2013/8/4 Powered by node.',
+        bitrate: 0,
+        type: 'RAW',
+        comment: ''
+    },
+    host: {
+        ip: '',
+        listeners: -9,
+        relays: -9,
+        direct: false,
+        uptime: 0
+    },
+    track: {
+        creator: '',
+        album: '',
+        title: '',
+        url: ''
+    }
+};
+
 export var routings = {
     '/': (req, res) => {
         res.render('index', { name: 'index' });
     },
     '/list.html': (req, res) => {
-        http.get(rootServer, (proxyRes: http.ClientResponse) => {
+        http.get(ROOT_SERVER, (proxyRes: http.ClientResponse) => {
             if (proxyRes.statusCode !== 200) {
                 res.status(500);
                 return;
@@ -21,12 +47,14 @@ export var routings = {
                 body += data;
             });
             proxyRes.on('end', () => {
-                var channels: Channel[] = JSON.parse(body);
+                var channels = convertForYP(<Channel[]>JSON.parse(body));
+                channels.unshift(SERVER_COMMENT);
                 res.render('list', {
-                    name: 'list', channels: channels.map(x => {
-                        x['time'] = toHoursMinutes(x.host.uptime);
-                        return x;
-                    })
+                    name: 'list', channels: channels
+                        .map(x => {
+                            x['time'] = toHoursMinutes(x.host.uptime);
+                            return x;
+                        })
                 });
             });
         }).on('error', e => {
@@ -41,9 +69,9 @@ export var routings = {
         res.render('terms', { name: 'terms' });
     },
     '/index.txt': (req: ExpressServerRequest, res: ExpressServerResponse) => {
-        http.get(rootServer, (proxyRes: http.ClientResponse) => {
+        var proxyReq = http.get(ROOT_SERVER, (proxyRes: http.ClientResponse) => {
             if (proxyRes.statusCode !== 200) {
-                res.status(500);
+                res.send(500);
                 return;
             }
             var body = '';
@@ -58,33 +86,50 @@ export var routings = {
             });
             proxyRes.on('end', () => {
                 var content = '';
+                content += toIndex(SERVER_COMMENT);
                 var channels: Channel[] = JSON.parse(body);
-                channels.forEach(channel => {
-                    content += channel.info.name + '<>';
-                    content += channel.id + '<>';
-                    content += channel.host.ip + '<>';
-                    content += channel.info.url + '<>';
-                    content += channel.info.genre + '<>';
-                    content += channel.info.desc + '<>';
-                    content += channel.host.listeners + '<>';
-                    content += channel.host.relays + '<>';
-                    content += channel.info.bitrate + '<>';
-                    content += channel.info.type + '<>';
-                    content += channel.track.creator + '<>';
-                    content += channel.track.album + '<>';
-                    content += channel.track.title + '<>';
-                    content += channel.track.url + '<>';
-                    content += encodeURI(channel.info.name) + '<>';
-                    content += toHoursMinutes(channel.host.uptime) + '<>';
-                    content += 'click' + '<>';
-                    content += channel.host.direct ? '1' : '0' + '\n';
+                convertForYP(channels).forEach(channel => {
+                    content += toIndex(channel);
                 });
                 res.send(200, content);
             });
-        }).on('error', e => {
-                console.error("Got error: " + e.message);
-            });
+        });
+        proxyReq.setTimeout(10 * 1000, () => {
+            res.send(500);
+        });
+        proxyReq.on('error', e => {
+            console.error("Got error: " + e.message);
+        });
     }
+}
+
+function convertForYP(channels: Channel[]) {
+    return channels.filter(x => x.info.type != null).map(x => {
+        x.info.genre = x.info.genre.replace(/^dp/, '');
+        return x;
+    });
+}
+
+function toIndex(channel: Channel) {
+    return channel.info.name + '<>'
+        + channel.id + '<>'
+        + channel.host.ip + '<>'
+        + channel.info.url + '<>'
+        + channel.info.genre + '<>'
+        + channel.info.desc + '<>'
+        + channel.host.listeners + '<>'
+        + channel.host.relays + '<>'
+        + channel.info.bitrate + '<>'
+        + channel.info.type + '<>'
+        + channel.track.creator + '<>'
+        + channel.track.album + '<>'
+        + channel.track.title + '<>'
+        + channel.track.url + '<>'
+        + encodeURI(channel.info.name) + '<>'
+        + toHoursMinutes(channel.host.uptime) + '<>'
+        + 'click' + '<>'
+        + channel.info.comment + '<>'
+        + (channel.host.direct ? '1' : '0') + '\n';
 }
 
 function toHoursMinutes(sec: number) {

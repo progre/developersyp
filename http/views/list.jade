@@ -50,6 +50,6 @@ block content
     function setPort(port) {
       $('.play').each(function() {
         var play = $(this);
-        play.attr('href', play.attr('href').replace(/localhost:.*\//, 'localhost:' + port + '/'));
+        play.attr('href', play.attr('href').replace(/localhost:.*?\//, 'localhost:' + port + '/'));
       });
     }

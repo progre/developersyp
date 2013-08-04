@@ -1,3 +1,4 @@
+var Iconv = require('iconv').Iconv;
 import putil = require('./util');
 import GID = require('./gid');
 
@@ -148,7 +149,13 @@ export class Atom {
             case 'string':
                 if (this.content.readUInt8(this.content.length - 1) !== 0)
                     throw new Error('String must ends with null byte');
-                return this.content.slice(0, this.content.length - 1).toString('utf-8');
+                var sliced = this.content.slice(0, this.content.length - 1);
+                if (!isUTF8Valid(sliced)) {
+                    var str = fromShiftJIS(sliced);
+                    if (str != null)
+                        return str;
+                }
+                return sliced.toString('utf-8');
             case 'bytes':
                 return this.content;
             default:
@@ -341,3 +348,26 @@ Atom.PacketType[HOST_VERSION_EX_PREFIX] = 'bytes';
 Atom.PacketType[HOST_VERSION_EX_NUMBER] = 'short';
 Atom.PacketType['styp'] = 'string';
 Atom.PacketType['sext'] = 'string';
+
+/** エンコーディング上の不正な表現が出てくる時じゃないと検知できない */
+function isUTF8Valid(content: NodeBuffer) {
+    return equals(content, new Buffer(content.toString('utf-8'), 'utf-8'));
+}
+function fromShiftJIS(content: NodeBuffer) {
+    var str = new Iconv('CP932', 'UTF-8').convert(content).toString();
+    var buf: NodeBuffer = new Iconv('UTF-8', 'CP932').convert(str);
+    if (!equals(content, buf))
+        return null;
+    return str;
+}
+
+function equals(buf1: NodeBuffer, buf2: NodeBuffer) {
+    if (buf1.length !== buf2.length)
+        return false;
+    for (var i = 0, len = buf1.length; i < len; i++) {
+        if (buf1.readInt8(i) !== buf2.readInt8(i)) {
+            return false;
+        }
+    }
+    return true;
+}

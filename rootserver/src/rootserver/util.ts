@@ -2,6 +2,14 @@ export function isEmpty(str: string) {
     return str == null || str.length === 0;
 }
 
+export function padLeft(str: string, totalWidth: number, paddingChar: string) {
+    var padStr = str;
+    while (padStr.length < totalWidth) {
+        padStr = paddingChar + padStr;
+    }
+    return padStr.substring(0, totalWidth);
+}
+
 export function padRight(str: string, totalWidth: number, paddingChar: string) {
     var padStr = str;
     while (padStr.length < totalWidth) {

@@ -14,7 +14,7 @@ class GID {
     toString() {
         var data = '';
         for (var i = 0; i < 16; i++) {
-            data += putil.padRight(this._id.readUInt8(i).toString(16).toUpperCase(), 2, '0');
+            data += putil.padLeft(this._id.readUInt8(i).toString(16).toUpperCase(), 2, '0');
         }
         return data;
     }

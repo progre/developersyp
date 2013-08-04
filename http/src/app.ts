@@ -8,21 +8,23 @@ var path = require('path');
 var log4js = require('log4js');
 import routes = require('routes/index');
 
+var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/log'
+
 log4js.configure({
     appenders: [{
         category: 'app',
         type: 'dateFile',
-        filename: 'log/access.log',
+        filename: LOG_DIRECTORY + '/http.log',
         pattern: '-yyyy-MM-dd'
     }]
 });
-if (!fs.existsSync('log')) {
-    fs.mkdirSync('log', '777');
+if (!fs.existsSync('LOG_DIRECTORY')) {
+    fs.mkdirSync('LOG_DIRECTORY', '777');
 }
 var logger = log4js.getLogger('app');
 
 var port = parseInt(process.argv[2], 10);
-if (port == null)
+if (isNaN(port))
     port = 80;
 
 var app = express();

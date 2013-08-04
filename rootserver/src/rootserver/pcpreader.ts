@@ -1,8 +1,7 @@
 import putil = require('./util');
 import pcp = require('./pcp');
 
-export = PcpReader;
-class PcpReader {
+export class PcpReader {
     private header = {
         name: '',
         length: -1,
@@ -10,7 +9,6 @@ class PcpReader {
     };
     private atomReader: AtomReader;
 
-    // TODO: ヘッダーとAtomで分けたほうがよさそう
     /** ヘッダーから読み進める
         ヘッダーの読み込み失敗時に先頭4バイトのバッファーを投げる
      */
@@ -22,7 +20,7 @@ class PcpReader {
                 return null;
             this.header.name = buffer.toString('utf8');
             if (this.header.name !== 'pcp\n')
-                throw buffer;
+                throw new Error('buffer');
         }
         if (this.header.length < 0) {
             var buffer = readable.read(4);
@@ -52,7 +50,7 @@ class PcpReader {
     }
 }
 
-class AtomReader {
+export class AtomReader {
     private name: string;
     private length: number;
     private children: pcp.Atom[] = [];

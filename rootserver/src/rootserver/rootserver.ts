@@ -9,22 +9,6 @@ import GID = require('./gid');
 import PcpServerSocket = require('./pcpserversocket');
 import httpRequestListener = require('./httprequestlistener');
 
-log4js.configure({
-    appenders: [
-        {
-            category: 'root-pcp',
-            type: 'dateFile',
-            filename: 'log/root-pcp.log',
-            pattern: '-yyyy-MM-dd'
-        },
-        {
-            category: 'root-http',
-            type: 'dateFile',
-            filename: 'log/root-http.log',
-            pattern: '-yyyy-MM-dd'
-        }]
-});
-
 export interface NodeSocket2 extends net.NodeSocket, ReadableStream2 {
 }
 
@@ -40,10 +24,6 @@ export class RootServer {
     get sessionId() { return this._sessionId; }
 
     listen() {
-        if (!fs.existsSync('log')) {
-            fs.mkdirSync('log', '777');
-        }
-
         var pcpLogger = log4js.getLogger('root-pcp');
         this.pcp = net.createServer((client: NodeSocket2) =>
             new PcpServerSocket(this, client, pcpLogger)
@@ -67,12 +47,16 @@ export class RootServer {
         });
     }
 
-    destroy() {
+    close() {
         this.pcp.close();
         this.http.close();
     }
 
     putHost(host: ch.Host, atom: pcp.Atom) {
+        if ((atom.get(pcp.HOST_FLAGS1) & pcp.HOST_FLAGS1_RECV) === 0) {
+            this.removeChannel(atom.get(pcp.HOST_CHANID));
+            return;
+        }
         var sessionId: GID = atom.get(pcp.HOST_ID);
         var channelId: GID = atom.get(pcp.HOST_CHANID);
         if (channelId == null)
@@ -83,32 +67,28 @@ export class RootServer {
         channel.putHost(sessionId, host, atom);
     }
 
-    addChannel(host: ch.Host, atom: pcp.Atom) {
+    putChannel(atom: pcp.Atom, broadcastId: GID) {
         var channelId: GID = atom.get(pcp.CHAN_ID);
         if (channelId == null)
             throw new Error('channel id not found');
         var channel = this.channels[channelId.toString()];
-        if (channel == null && host.broadcast_id != null) {
-            channel = new ch.Channel(channelId, host.broadcast_id, null, null, {});
+        if (channel == null && broadcastId != null) {
+            channel = new ch.Channel(channelId, broadcastId, null, null, {});
             this.channels[channelId.toString()] = channel;
         }
-        if (!channel.broadcast_id.equals(host.broadcast_id)) {
+        if (!channel.broadcast_id.equals(broadcastId)) {
             return;
         }
         channel.update(atom);
     }
 
-    removeChannel(host: ch.Host);
-    removeChannel(channelId: GID);
-    removeChannel(arg: any) {
-        if (arg instanceof ch.Host) {
-            putil.deleteIf2(this.channels,
-                channel => channel.broadcast_id.equals((<ch.Host>arg).broadcast_id));
-            return;
-        } else {
-            putil.deleteIf2(this.channels,
-                channel => channel.channel_id.equals(<GID>arg));
-            return;
-        }
+    removeChannelByBroadcastId(broadcastId: GID) {
+        putil.deleteIf2(this.channels,
+            channel => channel.broadcast_id.equals(broadcastId));
+    }
+
+    private removeChannel(channelId: GID) {
+        putil.deleteIf2(this.channels,
+            channel => channel.channel_id.equals(channelId));
     }
 }

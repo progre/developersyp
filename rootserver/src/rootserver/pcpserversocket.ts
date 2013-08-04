@@ -2,7 +2,7 @@ import net = require('net');
 import log4js = require('log4js');
 import pcp = require('./pcp');
 import ch = require('./channel');
-import PcpReader = require('./pcpreader');
+import rdr = require('./pcpreader');
 import GID = require('./gid');
 import root = require('./rootserver');
 
@@ -11,13 +11,16 @@ var AGENT_NAME = 'DP';
 export = PcpServerSocket;
 class PcpServerSocket {
     private ip: string;
-    private pcpReader: PcpReader = new PcpReader();
+    private pcpReader = new rdr.PcpReader();
     private state = ServerState.WAIT_HELO;
     private host: ch.Host;
 
     constructor(
+        /** サーバー */
         private server: root.RootServer,
+        /** 接続中のクライアント */
         private client: root.NodeSocket2,
+        /** ログ */
         private logger: log4js.Logger
         ) {
         this.ip = client.remoteAddress + ':' + client.remotePort;
@@ -26,7 +29,7 @@ class PcpServerSocket {
             try {
                 this.onReadable();
             } catch (e) {
-                logger.error('uncaughtException: ' + e.stack || e);
+                logger.error('uncaughtException: ' + (e.stack || e));
                 client.destroy();
             }
         });
@@ -39,7 +42,7 @@ class PcpServerSocket {
         client.on('close', () => {
             // 正常に通信していればここでremoveする必要はないはず
             if (this.host != null && this.host.broadcast_id != null)
-                this.server.removeChannel(this.host);
+                this.server.removeChannelByBroadcastId(this.host.broadcast_id);
             this.logger.info('client close. ' + this.ip);
         });
     }
@@ -51,19 +54,7 @@ class PcpServerSocket {
                 return;
             switch (this.state) {
                 case ServerState.WAIT_HELO:
-                    if (atom.name !== pcp.HELO)
-                        throw new Error('Handshake failed');
-                    this.oleh();
-                    if (atom.get(pcp.HELO_PING) != null)
-                        throw new Error('早くコードかけks');
-                    this.host = new ch.Host(
-                        atom.get(pcp.HELO_SESSIONID),
-                        atom.get(pcp.HELO_BCID),
-                        atom.get(pcp.HELO_AGENT),
-                        this.client.remoteAddress,
-                        atom.get(pcp.HELO_PORT),
-                        atom.get(pcp.HELO_VERSION));
-                    this.state = ServerState.WAIT_MAIN;
+                    this.onHelo(atom);
                     break;
                 case ServerState.WAIT_MAIN:
                     this.process_atom(atom);
@@ -77,6 +68,68 @@ class PcpServerSocket {
         }
     }
 
+    private onHelo(atom: pcp.Atom) {
+        if (atom.name !== pcp.HELO)
+            throw new Error('Handshake failed');
+        if (atom.get(pcp.HELO_PING) != null) {
+            this.ping(
+                atom.get(pcp.HELO_SESSIONID),
+                this.client.remoteAddress,
+                atom.get(pcp.HELO_PING),
+                port => this.setHost(atom, port));
+            return;
+        }
+        this.setHost(atom);
+    }
+
+    private setHost(atom: pcp.Atom, port?: number) {
+        if (port == null)
+            port = atom.get(pcp.HELO_PORT);
+        this.host = new ch.Host(
+            atom.get(pcp.HELO_SESSIONID),
+            atom.get(pcp.HELO_BCID),
+            atom.get(pcp.HELO_AGENT),
+            this.client.remoteAddress,
+            port,
+            atom.get(pcp.HELO_VERSION));
+        this.oleh();
+        this.state = ServerState.WAIT_MAIN;
+    }
+
+    /** クライアントのポート開放確認 */
+    private ping(
+        sessionId: GID, host: string, pingPort: number,
+        callback: (port: number) => void ) {
+
+        var subSocket: net.NodeSocket = <any>net.connect(pingPort, host, () => {
+            var content = new Buffer(4);
+            content.writeUInt32LE(1, 0);
+            new pcp.Atom('pcp\n', null, content).writeTo(subSocket);
+            var helo = new pcp.Atom(pcp.HELO, [], null);
+            helo.put(pcp.HELO_SESSIONID, this.server.sessionId);
+            helo.writeTo(subSocket);
+
+            var reader = new rdr.AtomReader();
+            subSocket.on('readable', () => {
+                try {
+                    var atom = reader.read(<any>subSocket);
+                    if (atom == null)
+                        return;
+                    subSocket.end();
+                    callback(sessionId.equals(atom.get(pcp.HELO_SESSIONID)) ? pingPort : 0);
+                } catch (e) {
+                    this.logger.error('[subSocket] uncaughtException: ' + (e.stack || e));
+                    subSocket.destroy();
+                }
+            });
+        });
+        subSocket.setTimeout(5 * 1000, () => {
+            this.logger.error('[subSocket] timeout.');
+            subSocket.destroy();
+            callback(0);
+        });
+    }
+
     /** olehコマンドをクライアントに送信する */
     private oleh() {
         var oleh = new pcp.Atom(pcp.OLEH, [], null);
@@ -84,7 +137,7 @@ class PcpServerSocket {
         oleh.put(pcp.HELO_SESSIONID, this.server.sessionId);
         oleh.put(pcp.HELO_VERSION, 1218);
         oleh.put(pcp.HELO_REMOTEIP, this.client.remoteAddress);
-        oleh.put(pcp.HELO_PORT, 7144); // .rbだとnilが入っていた？
+        oleh.put(pcp.HELO_PORT, this.host.port); // .rbだとnilが入っていた？
         oleh.writeTo(this.client);
     }
 
@@ -93,17 +146,15 @@ class PcpServerSocket {
             case pcp.BCST:
                 this.on_bcst(atom);
                 break;
-            case pcp.HOST:
-                if ((atom.get(pcp.HOST_FLAGS1) & pcp.HOST_FLAGS1_RECV) === 0)
-                    this.server.removeChannel(atom.get(pcp.HOST_CHANID));
-                this.server.putHost(this.host, atom);
-                break;
             case pcp.CHAN:
-                this.server.addChannel(this.host, atom);
+                this.server.putChannel(atom, this.host.broadcast_id);
+                break;
+            case pcp.HOST:
+                this.server.putHost(this.host, atom);
                 break;
             case pcp.QUIT:
                 if (this.host != null && this.host.broadcast_id != null)
-                    this.server.removeChannel(this.host);
+                    this.server.removeChannelByBroadcastId(this.host.broadcast_id);
                 break;
             default:
                 this.logger.error(this.client.remoteAddress + ' | Unsupported type: ' + atom.name);
