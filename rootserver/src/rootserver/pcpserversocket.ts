@@ -41,8 +41,8 @@ class PcpServerSocket {
         });
         client.on('close', () => {
             // 正常に通信していればここでremoveする必要はないはず
-            if (this.host != null && this.host.broadcast_id != null)
-                this.server.removeChannelByBroadcastId(this.host.broadcast_id);
+            if (this.host != null && this.host.broadcastId != null)
+                this.server.removeChannelByBroadcastId(this.host.broadcastId);
             this.logger.info('client close. ' + this.ip);
         });
     }
@@ -56,8 +56,8 @@ class PcpServerSocket {
                 case ServerState.WAIT_HELO:
                     this.onHelo(atom);
                     break;
-                case ServerState.WAIT_MAIN:
-                    this.process_atom(atom);
+                case ServerState.WAIT_BCST:
+                    this.onBcst(atom);
                     break;
                 default:
                     throw new Error('Invalid state error.');
@@ -93,7 +93,7 @@ class PcpServerSocket {
             port,
             atom.get(pcp.HELO_VERSION));
         this.oleh();
-        this.state = ServerState.WAIT_MAIN;
+        this.state = ServerState.WAIT_BCST;
     }
 
     /** クライアントのポート開放確認 */
@@ -141,30 +141,21 @@ class PcpServerSocket {
         oleh.writeTo(this.client);
     }
 
-    private process_atom(atom: pcp.Atom) {
-        switch (atom.name) {
-            case pcp.BCST:
-                this.on_bcst(atom);
-                break;
-            case pcp.CHAN:
-                this.server.putChannel(atom, this.host.broadcast_id);
-                break;
-            case pcp.HOST:
-                this.server.putHost(this.host, atom);
-                break;
-            case pcp.QUIT:
-                if (this.host != null && this.host.broadcast_id != null)
-                    this.server.removeChannelByBroadcastId(this.host.broadcast_id);
-                break;
-            default:
-                this.logger.error(this.client.remoteAddress + ' | Unsupported type: ' + atom.name);
-                break;
-        }
-    }
-
-    private on_bcst(atom: pcp.Atom) {
+    private onBcst(atom: pcp.Atom) {
+        if (atom.name !== pcp.BCST)
+            throw new Error('BCST failed. atom: ' + JSON.stringify(atom));
         atom.children.forEach(c => {
             switch (c.name) {
+                case pcp.CHAN:
+                    this.server.putChannel(atom, this.host.broadcastId);
+                    break;
+                case pcp.HOST:
+                    this.server.putHost(this.host, atom);
+                    break;
+                case pcp.QUIT:
+                    if (this.host != null && this.host.broadcastId != null)
+                        this.server.removeChannelByBroadcastId(this.host.broadcastId);
+                    break;
                 case pcp.BCST_TTL:
                 case pcp.BCST_HOPS:
                 case pcp.BCST_FROM:
@@ -177,7 +168,7 @@ class PcpServerSocket {
                 case pcp.BCST_VERSION_EX_NUMBER:
                     break;
                 default:
-                    this.process_atom(c);
+                    this.logger.error(this.client.remoteAddress + ' | Unsupported type: ' + atom.name);
                     break;
             }
         });
@@ -185,5 +176,5 @@ class PcpServerSocket {
 }
 
 enum ServerState {
-    WAIT_HELO, WAIT_MAIN
+    WAIT_HELO, WAIT_BCST
 }

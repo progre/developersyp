@@ -62,7 +62,7 @@ export class RootServer {
         if (channelId == null)
             throw new Error('channel id not found');
         var channel = this.channels[channelId.toString()];
-        if (channel == null || !sessionId.equals(host.session_id))
+        if (channel == null || !sessionId.equals(host.sessionId))
             return;
         channel.putHost(sessionId, host, atom);
     }
@@ -76,7 +76,7 @@ export class RootServer {
             channel = new ch.Channel(channelId, broadcastId, null, null, {});
             this.channels[channelId.toString()] = channel;
         }
-        if (!channel.broadcast_id.equals(broadcastId)) {
+        if (!channel.broadcastId.equals(broadcastId)) {
             return;
         }
         channel.update(atom);
@@ -84,11 +84,11 @@ export class RootServer {
 
     removeChannelByBroadcastId(broadcastId: GID) {
         putil.deleteIf2(this.channels,
-            channel => channel.broadcast_id.equals(broadcastId));
+            channel => channel.broadcastId.equals(broadcastId));
     }
 
     private removeChannel(channelId: GID) {
         putil.deleteIf2(this.channels,
-            channel => channel.channel_id.equals(channelId));
+            channel => channel.channelId.equals(channelId));
     }
 }

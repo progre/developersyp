@@ -47,7 +47,7 @@ function onRequest(
             logger.error('channel_info is null. ' + JSON.stringify(channel));
             continue;
         }
-        var id = channel.channel_id;
+        var id = channel.channelId;
         if (id == null) {
             logger.error('channel_id is null. ' + JSON.stringify(channel));
             continue;
@@ -57,7 +57,7 @@ function onRequest(
             logger.error('host is null. ' + JSON.stringify(channel));
             continue;
         }
-        slims.push(slim(channel.channel_id, info, host.info, channel.track));
+        slims.push(slim(channel.channelId, info, host.info, channel.track));
     }
     res.write(JSON.stringify(slims));
     res.end();

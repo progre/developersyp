@@ -3,8 +3,8 @@ import GID = require('./gid');
 
 export class Channel {
     constructor(
-        public channel_id: GID,
-        public broadcast_id: GID,
+        public channelId: GID,
+        public broadcastId: GID,
         public info: pcp.Atom,
         public track: pcp.Atom,
         public hosts: { [sessionId: string]: Host }) {
@@ -30,20 +30,20 @@ export class Channel {
 
     putHost(sessionId: GID, host: Host, atom: pcp.Atom) {
         this.hosts[sessionId.toString()] = host;
-        this.hosts[sessionId.toString()].vp_version = atom.get(pcp.HOST_VERSION_VP);
+        this.hosts[sessionId.toString()].vpVersion = atom.get(pcp.HOST_VERSION_VP);
         this.hosts[sessionId.toString()].info = atom;
     }
 }
 
 export class Host {
     constructor(
-        public session_id?: GID,
-        public broadcast_id?: GID,
+        public sessionId?: GID,
+        public broadcastId?: GID,
         public agent?: string,
         public ip?: string,
         public port?: number,
         public version?: number,
-        public vp_version?: number,
+        public vpVersion?: number,
         public info?: pcp.Atom) {
     }
 }
