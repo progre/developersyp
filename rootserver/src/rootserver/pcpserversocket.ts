@@ -144,13 +144,13 @@ class PcpServerSocket {
     private onBcst(atom: pcp.Atom) {
         if (atom.name !== pcp.BCST)
             throw new Error('BCST failed. atom: ' + JSON.stringify(atom));
-        atom.children.forEach(c => {
-            switch (c.name) {
+        atom.children.forEach(child => {
+            switch (child.name) {
                 case pcp.CHAN:
-                    this.server.putChannel(atom, this.host.broadcastId);
+                    this.server.putChannel(child, this.host.broadcastId);
                     break;
                 case pcp.HOST:
-                    this.server.putHost(this.host, atom);
+                    this.server.putHost(this.host, child);
                     break;
                 case pcp.QUIT:
                     if (this.host != null && this.host.broadcastId != null)
