@@ -105,9 +105,22 @@ export var routings = {
 
 function convertForYP(channels: Channel[]) {
     return channels.filter(x => x.info.type != null).map(x => {
-        x.info.genre = x.info.genre.replace(/^dp/, '');
+        var options = parseGenre(x.info.genre);
+        x.info.genre = options.genre;
+        if (options.isListenerInvisible) {
+            x.host.listeners = -1;
+            x.host.relays = -1;
+        }
         return x;
     });
+}
+
+function parseGenre(genre: string) {
+    var m = genre.match(/^dp(\?)?(.*)$/);
+    return {
+        genre: m[2],
+        isListenerInvisible: m[1] != null
+    };
 }
 
 function toIndex(channel: Channel) {
