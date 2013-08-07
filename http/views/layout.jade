@@ -9,7 +9,8 @@ html
     script(src='//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js')
     script(src='//ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js')
     script(src='//code.jquery.com/jquery-2.0.0.min.js')
-    script(src='//localhost:35729/livereload.js')
+    if process.env.NODE_ENV !== 'production'
+      script(src='//localhost:35729/livereload.js')
   body
     .wrapper
       .navbar.navbar-inverse.navbar-fixed-top

@@ -1,7 +1,7 @@
 import http = require('http');
 import putil = require('../common/util');
 
-var ROOT_SERVER = 'http://127.0.0.1:7180/snsbt_edimt6wfgkz_y4cmyr-zjru9s449_ybdw8wyt56c3nuggam8428jwm5269';
+var ROOT_SERVER = 'http://root-dp.prgrssv.net:7180/snsbt_edimt6wfgkz_y4cmyr-zjru9s449_ybdw8wyt56c3nuggam8428jwm5269';
 var SERVER_COMMENT = {
     id: '00000000000000000000000000000000',
     info: {

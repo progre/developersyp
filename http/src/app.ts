@@ -18,14 +18,16 @@ log4js.configure({
         pattern: '-yyyy-MM-dd'
     }]
 });
-if (!fs.existsSync('LOG_DIRECTORY')) {
-    fs.mkdirSync('LOG_DIRECTORY', '777');
+if (!fs.existsSync(LOG_DIRECTORY)) {
+    fs.mkdirSync(LOG_DIRECTORY, '777');
 }
 var logger = log4js.getLogger('app');
 
+var ipaddress = process.env.OPENSHIFT_INTERNAL_IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost';
 var port = parseInt(process.argv[2], 10);
-if (isNaN(port))
-    port = 80;
+if (isNaN(port)) {
+    port = process.env.OPENSHIFT_INTERNAL_PORT || process.env.OPENSHIFT_NODEJS_PORT || 80;
+}
 
 var app = express();
 
@@ -65,6 +67,6 @@ app.configure('development', function () {
     app.use(express.errorHandler());
 });
 
-http.createServer(app).listen(port, function () {
+http.createServer(app).listen(port, ipaddress, null, function () {
     console.log("Express server listening on port " + port);
 });
