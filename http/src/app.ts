@@ -7,6 +7,7 @@ import http = require('http');
 var path = require('path');
 var log4js = require('log4js');
 import routes = require('routes/index');
+import adminApi = require('routes/admin-api');
 
 var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/log'
 
@@ -34,11 +35,29 @@ var app = express();
 app.configure(function () {
     app.set('views', __dirname + '/views');
     app.set('view engine', 'jade');
+    //app.locals.pretty = true; // 綺麗な.htmlを吐く
+
+    () => {
+        for (var path in routes.routings) {
+            app.get(path, routes.routings[path]);
+        }
+        app.get('/env', (req, res) => {
+            var content = 'Version: ' + process.version + '\n<br/>\n' +
+                'Env: {<br/>\n<pre>';
+            for (var k in process.env) {
+                content += ' ' + k + ': ' + process.env[k] + '\n';
+            }
+            content += '}\n</pre><br/>\n'
+            res.send('<html>\n' +
+                ' <head><title>Node.js Process Env</title></head>\n' +
+                ' <body>\n<br/>\n' + content + '</body>\n</html>');
+        });
+    } ();
+
     app.use(express.favicon());
-    app.use(express.logger('dev'));
     app.use(express.bodyParser());
     app.use(express.methodOverride());
-    app.use(function (req, res, next) {
+    app.use((req, res, next) => {
         logger.info([
             req.headers['x-forwarded-for'] || req.client.remoteAddress,
             new Date().toLocaleString(),
@@ -52,18 +71,14 @@ app.configure(function () {
     });
     app.use(app.router);
     app.use(express.static(path.join(__dirname, 'public')));
-    app.use(function (req, res, next) {
+    app.use((req, res, next) => {
         res.status(404);
         res.render('404', {});
     });
-    //app.locals.pretty = true; // 綺麗な.htmlを吐く
 });
 
-for (var path in routes.routings) {
-    app.get(path, routes.routings[path]);
-}
-
 app.configure('development', function () {
+    app.use(express.logger('dev'));
     app.use(express.errorHandler());
 });
 
