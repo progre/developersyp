@@ -1,7 +1,6 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
-    secret: grunt.file.readJSON('secret.json'),
     develop: {
       server: {
         file: 'app.js',
@@ -40,7 +39,7 @@ module.exports = function(grunt) {
         src: ['src/**/*.ts'],
         dest: '',
         options: {
-          //          module: 'amd', //or commonjs
+          module: 'commonjs',//          module: 'amd', //or commonjs
           target: 'es5', //or es3
           base_path: 'src',
           sourcemap: true,
@@ -71,23 +70,6 @@ module.exports = function(grunt) {
           filter: 'isFile'
         }]
       }
-    },
-    sftp: {
-      deploy: {
-        files: {
-          "dist/": "dist/**"
-        },
-        options: {
-          createDirectories: true,
-          srcBasePath: 'dist/',
-          host: '<%= secret.host %>',
-          port: '<%= secret.port %>',
-          username: '<%= secret.username %>',
-          privateKey: grunt.file.read(process.env['HOME'] + '/.ssh/id_rsa'),
-          passphrase: '<%= secret.passphrase %>',
-          path: '<%= secret.path %>'
-        }
-      }
     }
   });
   grunt.registerTask('delayed-livereload', 'delayed livereload', function() {
@@ -104,7 +86,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-typescript');
   grunt.loadNpmTasks('grunt-exec');
   grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-ssh');
 
   grunt.registerTask('default', [
     'livereload-start',
