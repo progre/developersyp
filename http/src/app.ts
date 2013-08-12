@@ -2,7 +2,7 @@
 /// <reference path="DefinitelyTyped/express/express.d.ts"/>
 
 import fs = require('fs');
-import server = require('server/application/server');
+import server = require('application/server');
 import path = require('path');
 var log4js = require('log4js');
 
