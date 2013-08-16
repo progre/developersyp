@@ -76,7 +76,7 @@ function slim(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
             comment: info.get(pcp.CHAN_INFO_COMMENT)
         },
         host: {
-            ip: joinIpPort(hostInfo.get(pcp.HOST_IP)[0], hostInfo.get(pcp.HOST_PORT)[0]),
+            ip: joinIpPort(first(hostInfo.get(pcp.HOST_IP)), first(hostInfo.get(pcp.HOST_PORT))),
             listeners: hostInfo.get(pcp.HOST_NUML),
             relays: hostInfo.get(pcp.HOST_NUMR),
             direct: ((<number>hostInfo.get(pcp.HOST_FLAGS1)) & pcp.HOST_FLAGS1_DIRECT) != 0,
@@ -89,6 +89,13 @@ function slim(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
             url: track.get(pcp.CHAN_TRACK_URL),
         },
     };
+}
+
+function first(obj: any) {
+    if (!Array.isArray(obj)) {
+        return obj;
+    }
+    return obj[0];
 }
 
 function joinIpPort(ip: number[], port: number) {

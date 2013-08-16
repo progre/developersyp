@@ -1,5 +1,6 @@
 /// <reference path='DefinitelyTyped/log4js.d.ts'/>
 /// <reference path='DefinitelyTyped/node_patch.d.ts'/>
+/// <reference path='DefinitelyTyped/socket.io/socket.io.d.ts'/>
 
 import fs = require('fs');
 import path = require('path');

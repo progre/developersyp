@@ -2,6 +2,7 @@ import fs = require('fs');
 import net = require('net');
 import http = require('http');
 import log4js = require('log4js');
+import io = require('socket.io');
 import putil = require('./util');
 import ch = require('./channel');
 import pcp = require('./pcp');
@@ -42,6 +43,12 @@ export class RootServer {
         this.http = http.createServer((req, res) =>
             httpRequestListener(req, res, this.channels, httpLogger)
             );
+        var sm = io.listen(this.http, () => {
+            httpLogger.info('websocket-server bound. port: ' + this.httpPort);
+        });
+        sm.sockets.on('connection', socket => {
+            console.log(socket);
+        });
         this.http.listen(this.httpPort, () => {
             httpLogger.info('http-server bound. port: ' + this.httpPort);
         });

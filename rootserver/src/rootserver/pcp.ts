@@ -215,7 +215,7 @@ export class Atom {
         }
     }
 
-    /** w’è‚Ìname‚ÌAtom‚ğchildren‚©‚ç’T‚µ‚Ä•Ô‚· */
+    /** æŒ‡å®šã®nameã®Atomã‚’childrenã‹ã‚‰æ¢ã—ã¦è¿”ã™ */
     get(name: string): any {
         var children = this.children.filter(c => c.name === name);
         switch (children.length) {
@@ -236,7 +236,7 @@ export class Atom {
         return value;
     }
 
-    /** ˆø”‚Ìqƒf[ƒ^‚ğ©•ª‚Ìq‚Éput‚·‚é */
+    /** å¼•æ•°ã®å­ãƒ‡ãƒ¼ã‚¿ã‚’è‡ªåˆ†ã®å­ã«putã™ã‚‹ */
     update(atom: Atom) {
         atom.children.forEach(c => {
             this.put(c.name, c.value);
@@ -349,7 +349,7 @@ Atom.PacketType[HOST_VERSION_EX_NUMBER] = 'short';
 Atom.PacketType['styp'] = 'string';
 Atom.PacketType['sext'] = 'string';
 
-/** ƒGƒ“ƒR[ƒfƒBƒ“ƒOã‚Ì•s³‚È•\Œ»‚ªo‚Ä‚­‚é‚¶‚á‚È‚¢‚ÆŒŸ’m‚Å‚«‚È‚¢ */
+/** ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ä¸Šã®ä¸æ­£ãªè¡¨ç¾ãŒå‡ºã¦ãã‚‹æ™‚ã˜ã‚ƒãªã„ã¨æ¤œçŸ¥ã§ããªã„ */
 function isUTF8Valid(content: NodeBuffer) {
     return equals(content, new Buffer(content.toString('utf-8'), 'utf-8'));
 }

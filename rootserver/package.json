@@ -7,7 +7,8 @@
   },
   "dependencies": {
     "log4js": "~0.6.6",
-    "iconv": "~2.0.6"
+    "iconv": "~2.0.6",
+    "socket.io": "~0.9.16"
   },
   "devDependencies": {
     "tsd": ">=0.3.1",

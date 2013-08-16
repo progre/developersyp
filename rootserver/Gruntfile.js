@@ -15,7 +15,7 @@ module.exports = function(grunt) {
       server: {
         file: 'app.js',
         nodeArgs: ['--debug'],
-        args: [7140, 7141]
+        args: [7140, 7180]
       }
     },
     typescript: {
@@ -23,6 +23,7 @@ module.exports = function(grunt) {
         src: ['src/**/*.ts'],
         dest: '',
         options: {
+          module: 'commonjs',
           //          module: 'amd', //or commonjs
           target: 'es5', //or es3
           base_path: 'src',
@@ -36,7 +37,7 @@ module.exports = function(grunt) {
       tsd: {
         cmd: function() {
           var dependencies = [
-            'node'
+            'node', 'socket.io'
           ];
           return 'tsd install ' + dependencies.join(' ');
         }
@@ -66,7 +67,7 @@ module.exports = function(grunt) {
           host: '<%= secret.host %>',
           port: '<%= secret.port %>',
           username: '<%= secret.username %>',
-          privateKey: grunt.file.read(process.env['HOME'] + '/.ssh/id_rsa'),
+          privateKey: grunt.file.read((process.env.HOME || process.env.USERPROFILE) + '/.ssh/id_rsa'),
           passphrase: '<%= secret.passphrase %>',
           path: '<%= secret.path %>'
         }
