@@ -52,7 +52,7 @@ export var routings = {
                         x['time'] = toHoursMinutes(x.host.uptime);
                         return x;
                     }),
-                    doneChannels: convertForYP2(doneChannels)
+                    doneChannels: convertForYP2(doneChannels || [])
                 });
             });
         });
