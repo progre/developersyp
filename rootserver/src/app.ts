@@ -28,6 +28,12 @@ log4js.configure({
             type: 'dateFile',
             filename: LOG_DIRECTORY + '/root-http.log',
             pattern: '-yyyy-MM-dd'
+        },
+        {
+            category: 'root-ws',
+            type: 'dateFile',
+            filename: LOG_DIRECTORY + '/root-ws.log',
+            pattern: '-yyyy-MM-dd'
         }]
 });
 

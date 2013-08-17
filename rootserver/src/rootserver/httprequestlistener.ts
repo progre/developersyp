@@ -5,8 +5,11 @@ import ch = require('./channel');
 import pcp = require('./pcp');
 import GID = require('./gid');
 
-export = httpRequestListener;
-function httpRequestListener(
+export interface Channels {
+    [channelId: string]: ch.Channel;
+}
+
+export function httpRequestListener(
     req: http.ServerRequest, res: http.ServerResponse,
     channels: { [channelId: string]: ch.Channel; }, logger: log4js.Logger
     ) {
@@ -21,7 +24,7 @@ function httpRequestListener(
 }
 function onRequest(
     req: http.ServerRequest, res: http.ServerResponse,
-    channels: { [channelId: string]: ch.Channel; }, logger: log4js.Logger
+    channels: Channels, logger: log4js.Logger
     ) {
     if (req.method !== 'GET') {
         res.statusCode = 405;
@@ -35,35 +38,75 @@ function onRequest(
         return;
     }
 
-    var slims = [];
-    for (var key in channels) {
-        var channel = channels[key];
-        if (channel == null) {
-            logger.fatal('null in channels');
-            continue;
-        }
-        var info = channel.info;
-        if (info == null) {
-            logger.error('channel_info is null. ' + JSON.stringify(channel));
-            continue;
-        }
-        var id = channel.channelId;
-        if (id == null) {
-            logger.error('channel_id is null. ' + JSON.stringify(channel));
-            continue;
-        }
-        var host = putil.firstOrUndefined(channel.hosts);
-        if (host == null) {
-            logger.error('host is null. ' + JSON.stringify(channel));
-            continue;
-        }
-        slims.push(slim(channel.channelId, info, host.info, channel.track));
-    }
-    res.write(JSON.stringify(slims));
+    res.write(JSON.stringify(toSlims(channels)));
     res.end();
 }
 
-function slim(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
+export class WebSocket {
+    private socket: any;
+
+    onConnection(socket: any, channels: Channels) {
+        var wsLogger = log4js.getLogger('root-ws');
+        wsLogger.info('ws-server was connected from ' + socket);
+        if (this.socket != null) {
+            this.socket.destroy();
+        }
+        this.socket = socket;
+        socket.emit('channels', JSON.stringify(toSlims(channels)));
+    }
+
+    updateChannel(channel: ch.Channel) {
+        if (this.socket == null)
+            return;
+        var s = slim(channel);
+        if (s == null)
+            return;
+        this.socket.emit('channel', JSON.stringify(s));
+    }
+
+    deleteChannel(channelId: GID) {
+        if (this.socket == null)
+            return;
+        this.socket.emit('deleteChannel', channelId.toString());
+    }
+}
+
+function toSlims(channels: Channels) {
+    var slims = [];
+    for (var key in channels) {
+        var s = slim(channels[key]);
+        if (s == null)
+            continue;
+        slims.push(s);
+    }
+    return slims;
+}
+
+function slim(channel: ch.Channel) {
+    var logger = log4js.getLogger('root-http');
+    if (channel == null) {
+        logger.fatal('null in channels');
+        return null;
+    }
+    var info = channel.info;
+    if (info == null) {
+        logger.error('channel_info is null. ' + JSON.stringify(channel));
+        return null;
+    }
+    var id = channel.channelId;
+    if (id == null) {
+        logger.error('channel_id is null. ' + JSON.stringify(channel));
+        return null;
+    }
+    var host = putil.firstOrUndefined(channel.hosts);
+    if (host == null) {
+        logger.error('host is null. ' + JSON.stringify(channel));
+        return null;
+    }
+    return slim2(channel.channelId, info, host.info, channel.track);
+}
+
+function slim2(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
     return {
         id: id.toString(),
         info: {

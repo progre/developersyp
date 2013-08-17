@@ -2,6 +2,10 @@ export function isEmpty(str: string) {
     return str == null || str.length === 0;
 }
 
+export interface SimpleMap<T> {
+    [key: string]: T
+}
+
 export function padLeft(str: string, totalWidth: number, paddingChar: string) {
     var padStr = str;
     while (padStr.length < totalWidth) {
@@ -24,7 +28,7 @@ export function deleteIf<T>(array: any, filter: (item: T) => boolean) {
     });
 }
 
-export function deleteIf2<T>(array: { [key: string]: T }, filter: (item: T) => boolean) {
+export function deleteIf2<T>(array: SimpleMap<T>, filter: (item: T) => boolean) {
     for (var key in array) {
         if (filter(array[key])) {
             delete array[key];
@@ -32,7 +36,13 @@ export function deleteIf2<T>(array: { [key: string]: T }, filter: (item: T) => b
     }
 }
 
-export function firstOrUndefined<T>(obj: { [key: string]: T }) {
+export function forEach<T>(array: SimpleMap<T>, func: (item: T) => void ) {
+    for (var key in array) {
+        func(array[key]);
+    }
+}
+
+export function firstOrUndefined<T>(obj: SimpleMap<T>) {
     return obj[Object.keys(obj)[0]];
 }
 

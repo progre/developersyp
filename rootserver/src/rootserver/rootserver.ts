@@ -1,4 +1,3 @@
-import fs = require('fs');
 import net = require('net');
 import http = require('http');
 import log4js = require('log4js');
@@ -8,7 +7,7 @@ import ch = require('./channel');
 import pcp = require('./pcp');
 import GID = require('./gid');
 import PcpServerSocket = require('./pcpserversocket');
-import httpRequestListener = require('./httprequestlistener');
+import hrl = require('./httprequestlistener');
 
 export interface NodeSocket2 extends net.NodeSocket, ReadableStream2 {
 }
@@ -18,6 +17,8 @@ export class RootServer {
     private channels: { [channelId: string]: ch.Channel; } = {};
     private pcp: net.Server;
     private http: http.Server;
+    private ws: SocketManager;
+    private webSocket = new hrl.WebSocket();
 
     constructor(private pcpPort: number, private httpPort: number) {
     }
@@ -41,14 +42,13 @@ export class RootServer {
 
         var httpLogger = log4js.getLogger('root-http');
         this.http = http.createServer((req, res) =>
-            httpRequestListener(req, res, this.channels, httpLogger)
+            hrl.httpRequestListener(req, res, this.channels, httpLogger)
             );
-        var sm = io.listen(this.http, () => {
-            httpLogger.info('websocket-server bound. port: ' + this.httpPort);
-        });
-        sm.sockets.on('connection', socket => {
-            console.log(socket);
-        });
+
+        var sm = io.listen(this.http);
+        sm.sockets.on('connection',
+            socket => this.webSocket.onConnection(socket, this.channels));
+
         this.http.listen(this.httpPort, () => {
             httpLogger.info('http-server bound. port: ' + this.httpPort);
         });
@@ -72,6 +72,7 @@ export class RootServer {
         if (channel == null || !sessionId.equals(host.sessionId))
             return;
         channel.putHost(sessionId, host, atom);
+        this.webSocket.updateChannel(channel);
     }
 
     putChannel(atom: pcp.Atom, broadcastId: GID) {
@@ -87,9 +88,13 @@ export class RootServer {
             return;
         }
         channel.update(atom);
+        this.webSocket.updateChannel(channel);
     }
 
     removeChannelByBroadcastId(broadcastId: GID) {
+        putil.forEach(this.channels, channel => {
+            this.webSocket.deleteChannel(channel.channelId);
+        });
         putil.deleteIf2(this.channels,
             channel => channel.broadcastId.equals(broadcastId));
     }
@@ -97,5 +102,6 @@ export class RootServer {
     private removeChannel(channelId: GID) {
         putil.deleteIf2(this.channels,
             channel => channel.channelId.equals(channelId));
+        this.webSocket.deleteChannel(channelId);
     }
 }
