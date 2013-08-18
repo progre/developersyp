@@ -1,6 +1,6 @@
 import log4js = require('log4js');
 import http = require('http');
-import putil = require('./util');
+import putil = require('./../common/util');
 import ch = require('./channel');
 import pcp = require('./pcp');
 import GID = require('./gid');

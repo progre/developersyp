@@ -1,4 +1,4 @@
-import putil = require('./util');
+import putil = require('./../common/util');
 
 /** 16バイトのデータ */
 export = GID;
