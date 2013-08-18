@@ -1,0 +1,6 @@
+[submodule "http/src/common"]
+	path = http/src/common
+	url = git@bitbucket.org:progre/dp-common-src.git
+[submodule "rootserver/src/common"]
+	path = rootserver/src/common
+	url = git@bitbucket.org:progre/dp-common-src.git

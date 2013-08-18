@@ -15,6 +15,9 @@ if (isNaN(httpPort))
     httpPort = 7180;
 
 var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/log';
+if (!fs.existsSync(LOG_DIRECTORY)) {
+    fs.mkdirSync(LOG_DIRECTORY, '777');
+}
 log4js.configure({
     appenders: [
         {
@@ -36,10 +39,6 @@ log4js.configure({
             pattern: '-yyyy-MM-dd'
         }]
 });
-
-if (!fs.existsSync(LOG_DIRECTORY)) {
-    fs.mkdirSync(LOG_DIRECTORY, '777');
-}
 
 var rootServer = new root.RootServer(pcpPort, httpPort);
 rootServer.listen();
