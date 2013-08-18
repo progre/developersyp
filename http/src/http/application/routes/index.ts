@@ -104,7 +104,7 @@ function convertForYP2(doneChannels: ch.DoneChannel[]) {
 function format(date: Date) {
     var jst = new Date(date.getTime());
     jst.setHours(jst.getHours() + 9);// UTC+9
-    return dateformat(jst, 'UTC:yy/m/dd HH:MM');
+    return dateformat(jst, 'UTC:m/dd HH:MM');
 }
 
 function parseGenre(genre: string) {
