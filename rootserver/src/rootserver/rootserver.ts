@@ -45,8 +45,8 @@ export class RootServer {
             hrl.httpRequestListener(req, res, this.channels, httpLogger)
             );
 
-        var sm = io.listen(this.http);
-        sm.sockets.on('connection',
+        this.ws = io.listen(this.http);
+        this.ws.on('connection',
             socket => this.webSocket.onConnection(socket, this.channels));
 
         this.http.listen(this.httpPort, () => {
@@ -57,6 +57,9 @@ export class RootServer {
     close() {
         this.pcp.close();
         this.http.close();
+        this.ws.sockets.clients(undefined).forEach(client => {
+            client.disconnect();
+        });
     }
 
     putHost(host: ch.Host, atom: pcp.Atom) {

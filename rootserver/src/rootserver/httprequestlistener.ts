@@ -47,10 +47,8 @@ export class WebSocket {
 
     onConnection(socket: any, channels: Channels) {
         var wsLogger = log4js.getLogger('root-ws');
-        wsLogger.info('ws-server was connected from ' + socket);
-        if (this.socket != null) {
-            this.socket.destroy();
-        }
+        var address = socket.handshake.address;
+        wsLogger.info('ws-server was connected from ' + address.address + ':' + address.port);
         this.socket = socket;
         socket.emit('channels', JSON.stringify(toSlims(channels)));
     }
@@ -67,7 +65,7 @@ export class WebSocket {
     deleteChannel(channelId: GID) {
         if (this.socket == null)
             return;
-        this.socket.emit('deleteChannel', channelId.toString());
+        this.socket.emit('deleteChannel', channelId);
     }
 }
 
