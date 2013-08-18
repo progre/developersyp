@@ -1,5 +1,5 @@
 var Iconv = require('iconv').Iconv;
-import putil = require('./util');
+import putil = require('./../common/util');
 import GID = require('./gid');
 
 export var HELO = 'helo';

@@ -4,6 +4,7 @@ public/components
 .sass-cache
 *.map
 *.js
+*.css
 *.log*
 secret.json
 
