@@ -93,6 +93,8 @@ function convertForYP(channels: ch.Channel[]) {
 
 function convertForYP2(doneChannels: ch.DoneChannel[]) {
     return doneChannels.map(x => {
+        var options = parseGenre(x.channel.info.genre);
+        x.channel.info.genre = options.genre;
         x['beginText'] = format(x.begin);
         x['endText'] = format(x.end);
         return x;
