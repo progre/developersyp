@@ -45,7 +45,7 @@ export class RootServer {
             hrl.httpRequestListener(req, res, this.channels, httpLogger)
             );
 
-        this.ws = io.listen(this.http);
+        this.ws = io.listen(this.http, { 'log level': 1 }, () => { });
         this.ws.on('connection',
             socket => this.webSocket.onConnection(socket, this.channels));
 
