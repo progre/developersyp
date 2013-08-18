@@ -50,7 +50,7 @@ export class WebSocket {
         var address = socket.handshake.address;
         wsLogger.info('ws-server was connected from ' + address.address + ':' + address.port);
         this.socket = socket;
-        socket.emit('channels', JSON.stringify(toSlims(channels)));
+        socket.emit('channels', toSlims(channels));
     }
 
     updateChannel(channel: ch.Channel) {
@@ -59,13 +59,13 @@ export class WebSocket {
         var s = slim(channel);
         if (s == null)
             return;
-        this.socket.emit('channel', JSON.stringify(s));
+        this.socket.emit('channel', s);
     }
 
-    deleteChannel(channelId: GID) {
+    deleteChannel(channel: ch.Channel) {
         if (this.socket == null)
             return;
-        this.socket.emit('deleteChannel', channelId);
+        this.socket.emit('deleteChannel', channel);
     }
 }
 

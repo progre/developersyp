@@ -95,16 +95,23 @@ export class RootServer {
     }
 
     removeChannelByBroadcastId(broadcastId: GID) {
-        putil.forEach(this.channels, channel => {
-            this.webSocket.deleteChannel(channel.channelId);
-        });
+        putil.forEach(
+            putil.filter(this.channels, x => x.broadcastId.equals(broadcastId)),
+            channel => {
+                this.webSocket.deleteChannel(channel);
+            });
         putil.deleteIf2(this.channels,
-            channel => channel.broadcastId.equals(broadcastId));
+            x => x.broadcastId.equals(broadcastId));
     }
 
     private removeChannel(channelId: GID) {
+        var channel = putil.firstOrUndefined(
+            putil.filter(this.channels, x => x.channelId.equals(channelId)));
+        if (channel == null) {
+            return;
+        }
+        this.webSocket.deleteChannel(channel);
         putil.deleteIf2(this.channels,
             channel => channel.channelId.equals(channelId));
-        this.webSocket.deleteChannel(channelId);
     }
 }

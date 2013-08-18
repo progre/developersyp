@@ -36,6 +36,16 @@ export function deleteIf2<T>(array: SimpleMap<T>, filter: (item: T) => boolean) 
     }
 }
 
+export function filter<T>(map: SimpleMap<T>, filter: (item: T) => boolean) {
+    var newMap: SimpleMap<T> = {};
+    for (var key in map) {
+        if (filter(map[key])) {
+            newMap[key] = map[key];
+        }
+    }
+    return newMap;
+}
+
 export function forEach<T>(array: SimpleMap<T>, func: (item: T) => void ) {
     for (var key in array) {
         func(array[key]);
