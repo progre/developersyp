@@ -14,6 +14,7 @@ export interface Channel {
         listeners: number;
         relays: number;
         direct: boolean;
+        /** •b */
         uptime: number;
     };
     track: {

@@ -1,10 +1,11 @@
 var MongoClient = require('mongodb').MongoClient;
 import ch = require('./../domain/entity/channel');
-var logger = require('log4js').getLogger('app');
+var log4js = require('log4js');
 
 export module doneChannels {
     export function toArray(
         callback: (doneChannels: ch.DoneChannel[]) => void ): void {
+        var logger = log4js.getLogger('app');
         connect((err, db) => {
             if (err != null) {
                 logger.error(err);
@@ -17,7 +18,7 @@ export module doneChannels {
                     callback(null);
                     return;
                 }
-                collection.find().toArray((err, doneChannels: ch.DoneChannel[]) => {
+                collection.find().sort({ end: -1 }).toArray((err, doneChannels: ch.DoneChannel[]) => {
                     if (err != null) {
                         logger.error(err);
                         callback(null);
@@ -31,10 +32,25 @@ export module doneChannels {
     }
 
     export function add(channel: ch.DoneChannel) {
+        var logger = log4js.getLogger('app');
         connect((err, db) => {
-            db.collection('done_channels', (err, collection) => {
-                collection.insert(channel);
-                db.close(true);
+            db.collection('doneChannels', (err, collection) => {
+                var old = new Date();
+                old.setDate(old.getDate() - 1);
+                collection.findAndRemove({ end: { $lt: old } }, (err, line) => {// ‚Â‚¢‚Å‚ÉŒÃ‚¢‚à‚Ì‚ðíœ
+                    if (err != null) {
+                        logger.error(err);
+                    }
+                    if (line > 0) {
+                        logger.info(line + ' doneChannel(s) deleted.');
+                    }
+                }); // delete‚Í•À—ñŽÀs
+                collection.insert(channel, err => {
+                    if (err != null) {
+                        logger.error(err);
+                    }
+                    db.close(true);
+                });
             });
         });
     }

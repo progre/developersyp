@@ -93,10 +93,16 @@ function convertForYP(channels: ch.Channel[]) {
 
 function convertForYP2(doneChannels: ch.DoneChannel[]) {
     return doneChannels.map(x => {
-        x['beginText'] = dateformat(x.begin, 'yy/m/dd HH:MM');
-        x['endText'] = dateformat(x.end, 'yy/m/dd HH:MM');
+        x['beginText'] = format(x.begin);
+        x['endText'] = format(x.end);
         return x;
     });
+}
+
+function format(date: Date) {
+    var jst = new Date(date.getTime());
+    jst.setHours(jst.getHours() + 9);// UTC+9
+    return dateformat(jst, 'UTC:yy/m/dd HH:MM');
 }
 
 function parseGenre(genre: string) {

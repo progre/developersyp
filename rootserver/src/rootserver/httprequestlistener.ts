@@ -65,7 +65,7 @@ export class WebSocket {
     deleteChannel(channel: ch.Channel) {
         if (this.socket == null)
             return;
-        this.socket.emit('deleteChannel', channel);
+        this.socket.emit('deleteChannel', slim(channel));
     }
 }
 

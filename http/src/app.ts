@@ -26,4 +26,4 @@ if (isNaN(port)) {
     port = process.env.OPENSHIFT_INTERNAL_PORT || process.env.OPENSHIFT_NODEJS_PORT || 80;
 }
 
-server(ipaddress, port, __dirname + '/public', log4js.getLogger('app'));
+server(ipaddress, port, __dirname + '/public');

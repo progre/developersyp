@@ -1,11 +1,16 @@
 import http = require('http');
 import path = require('path');
 import express = require('express');
-import routes = require('routes/index');
-import adminApi = require('routes/admin-api');
+var ioClient = require('socket.io-client');
+var log4js = require('log4js');
+import routes = require('./routes/index');
+import adminApi = require('./routes/admin-api');
+import ch = require('./../domain/entity/channel');
+import db = require('./../infrastructure/database');
 
 export = execute;
-function execute(ipaddress: string, port: number, publicPath: string, logger: any) {
+function execute(ipaddress: string, port: number, publicPath: string) {
+    var logger = log4js.getLogger('app');
     var app = express();
 
     app.configure(() => {
@@ -59,4 +64,49 @@ function execute(ipaddress: string, port: number, publicPath: string, logger: an
     http.createServer(app).listen(port, ipaddress, null, function () {
         console.log("Express server listening on port " + port);
     });
+
+    connectWebSocket();
+}
+
+function connectWebSocket(): void {
+    var logger = log4js.getLogger('app');
+    logger.info('connecting...');
+    var server = ioClient.connect('ws://root-dp.prgrssv.net:7180', {
+        'force new connection': true
+    });
+    var connected = false;
+    server.on('connect', () => {
+        logger.info('connected.');
+        connected = true;
+        server.on('deleteChannel', (channel: ch.Channel) => {
+            var end = new Date();
+            var begin = new Date(end.getTime());
+            begin.setSeconds(begin.getSeconds() - channel.host.uptime);
+            db.doneChannels.add({
+                begin: begin,
+                end: end,
+                channel: channel
+            });
+        });
+        server.on('disconnect', () => {
+            logger.info('disconnect');
+            connectWebSocket();
+        });
+    });
+    server.on('error', err => {
+        logger.error(JSON.stringify(err));
+        server.disconnect();
+        if (connected) {
+            return;
+        }
+        connectWebSocket();
+    });
+}
+
+function printProperties(obj) {
+    var properties = '';
+    for (var prop in obj) {
+        properties += prop + "=" + obj[prop] + "\n";
+    }
+    console.log(properties);
 }

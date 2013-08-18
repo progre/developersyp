@@ -13,7 +13,8 @@ module.exports = function(grunt) {
         files: [
           'src/**/*.ts'
         ],
-        tasks: ['typescript']
+        tasks: ['typescript', 'develop'],
+        options: { nospawn: true }
       },
       stylus: {
         files: ['src/public/stylesheets/*.styl'],
@@ -56,6 +57,9 @@ module.exports = function(grunt) {
           ];
           return 'tsd install ' + dependencies.join(' ');
         }
+      },
+      deploy: {
+        cmd: 'deploy.bat'
       }
     },
     copy: {
@@ -99,6 +103,7 @@ module.exports = function(grunt) {
   grunt.registerTask('deploy', [
     'stylus',
     'typescript',
-    'copy'
+    'copy',
+    'exec:deploy'
   ]);
 };
