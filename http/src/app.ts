@@ -2,15 +2,14 @@
 /// <reference path="DefinitelyTyped/express/express.d.ts"/>
 
 import fs = require('fs');
-import server = require('application/server');
 import path = require('path');
 var log4js = require('log4js');
+import server = require('./http/application/server');
 
 var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/log'
 if (!fs.existsSync(LOG_DIRECTORY)) {
     fs.mkdirSync(LOG_DIRECTORY, '777');
 }
-
 log4js.configure({
     appenders: [{
         category: 'app',
