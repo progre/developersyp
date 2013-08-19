@@ -1,5 +1,6 @@
 import http = require('http');
 var dateformat = require('dateformat');
+var clone = require('clone');
 import putil = require('./../../../common/util');
 import rootserver = require('./../../infrastructure/rootserver');
 import ch = require('./../../domain/entity/channel');
@@ -38,20 +39,12 @@ export var routings = {
     },
     '/list.html': (req, res) => {
         rootserver.getIndexJsonAsync(channels => {
-            if (channels == null) {
-                res.render('list', { name: 'list', channels: [] });
-                return;
-            }
-            channels = convertForYP(channels);
-            channels.unshift(SERVER_COMMENT);
+            channels = channels || [];
 
             db.doneChannels.toArray(doneChannels => {
                 res.render('list', {
                     name: 'list',
-                    channels: channels.map(x => {
-                        x['time'] = toHoursMinutes(x.host.uptime);
-                        return x;
-                    }),
+                    channels: convertForYP(channels),
                     doneChannels: convertForYP2(doneChannels || [])
                 });
             });
@@ -66,7 +59,9 @@ export var routings = {
     '/index.txt': (req: ExpressServerRequest, res: ExpressServerResponse) => {
         rootserver.getIndexJsonAsync(channels => {
             if (channels == null) {
-                res.send(500);
+                var maintenance = clone(SERVER_COMMENT);
+                maintenance.info.comment = '只今サーバーのメンテナンス中です';
+                res.send(200, toIndex(maintenance));
                 return;
             }
             var content = '';
@@ -87,6 +82,7 @@ function convertForYP(channels: ch.Channel[]) {
             x.host.listeners = -1;
             x.host.relays = -1;
         }
+        x['time'] = toHoursMinutes(x.host.uptime);
         return x;
     });
 }

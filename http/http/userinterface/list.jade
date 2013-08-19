@@ -13,7 +13,7 @@ block content
       th.col-md-9 Channel
       th.col-md-1 Status
       th.col-md-1 Type
-    - if (channels.length === 1)
+    - if (channels.length === 0)
         tr
           td
           td
@@ -50,7 +50,7 @@ block content
     tr
       th.col-md-1
       th.col-md-8 Channel
-      th.col-md-3(style='text-align: center') period
+      th.col-md-3(style='text-align: center') Period
     - each ch in doneChannels || []
       tr
         td
