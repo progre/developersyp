@@ -36,7 +36,8 @@ block content
             div
               a(href=channel.info.url) #{channel.info.name}<br>
               |[#{channel.info.genre} - #{channel.info.desc}]<br>
-              |「#{channel.info.comment}」
+              - if (channel.info.comment.length > 0)
+                |「#{channel.info.comment}」
           td(style='text-align: center')
             |#{channel.host.listeners} / #{channel.host.relays}<br>
             <!--|(..) Stats<br> -->
