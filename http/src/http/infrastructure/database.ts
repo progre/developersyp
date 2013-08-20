@@ -36,15 +36,29 @@ export module doneChannels {
         connect((err, db) => {
             db.collection('doneChannels', (err, collection) => {
                 var old = new Date();
-                old.setDate(old.getDate() - 1);
-                collection.findAndRemove({ end: { $lt: old } }, (err, line) => {// ついでに古いものを削除
-                    if (err != null) {
-                        logger.error(err);
-                    }
-                    if (line > 0) {
-                        logger.info(line + ' doneChannel(s) deleted.');
-                    }
-                }); // deleteは並列実行
+                old.setMonth(old.getMonth() - 1);
+                collection.findAndRemove({
+                    end: { $lt: old }
+                }, (err, line) => {// ついでに古いものを削除
+                        if (err != null) {
+                            logger.error(err);
+                        }
+                        if (line > 0) {
+                            logger.info(line + ' doneChannel(s) deleted.');
+                        }
+                    }); // deleteは並列実行
+                collection.findAndRemove({
+                    'channel.id': channel.channel.id,
+                    end: { $gt: channel.begin }// > grater than 配信開始より後の時間に終了しているチャンネル
+                }, (err, line) => {// ネットワークトラブルとかで配信中にチャンネル終了扱いされちゃう場合に、直前の誤検出を削除する
+                        if (err != null) {
+                            logger.error(err);
+                        }
+                        if (line > 0) {
+                            logger.info(line + ' doneChannel(s) deleted.');
+                        }
+                    }); // deleteは並列実行
+
                 collection.insert(channel, err => {
                     if (err != null) {
                         logger.error(err);

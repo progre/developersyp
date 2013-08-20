@@ -59,7 +59,8 @@ block content
           div
             a(href=ch.channel.info.url) #{ch.channel.info.name}<br>
             |[#{ch.channel.info.genre} - #{ch.channel.info.desc}]<br>
-            |「#{ch.channel.info.comment}」
+            - if (ch.channel.info.comment.length > 0)
+              |「#{ch.channel.info.comment}」
         td(style='text-align: center')
           |#{ch['beginText']}<br>
           |≀<br>
