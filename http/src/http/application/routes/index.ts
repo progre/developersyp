@@ -121,9 +121,26 @@ function toIndex(channel: ch.Channel) {
 
 export class WebSocket {
     constructor(socket: any) {
+        socket.on('get', data => {
+            if (Array.isArray(data)) {
+                (<string[]>data).forEach(data => {
+                    switch (data) {
+                        case '/channels':
+                            rootserver.getIndexJsonAsync(channels =>
+                                socket.emit('post', { '/channel': convertForYP(channels || []) }));
+                            break;
+                        case '/done-channels':
+                            db.doneChannels.toArray(doneChannels =>
+                                socket.emit('post', { '/done-channels': convertForYP2(doneChannels || []) }));
+                            break;
+                    }
+                });
+            }
+        });
+
         rootserver.getIndexJsonAsync(channels =>
-            socket.emit('/channels', convertForYP(channels || [])));
+            socket.emit('post', { '/channels': convertForYP(channels || []) }));
         db.doneChannels.toArray(doneChannels =>
-            socket.emit('/done-channels', convertForYP2(doneChannels || [])));
+            socket.emit('post', { '/done-channels': convertForYP2(doneChannels || []) }));
     }
 }

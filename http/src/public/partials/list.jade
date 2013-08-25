@@ -3,6 +3,7 @@
     label.col-md-offset-1.col-md-1.control-label(for='port-input') ポート:
     .col-md-2
       input.form-control.input-sm(type='number', min='1', max='65535', value='7144', ng-model='port')
+    button.btn.btn-default.pull-right(ng-click='update()') 更新
 style
   .repeat.ng-enter, .repeat.ng-leave, .repeat.ng-move {
     -webkit-transition: all linear 0.1s;

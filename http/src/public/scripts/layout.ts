@@ -28,17 +28,30 @@ app.controller('ApplicationController', ['$scope', '$location',
 app.controller('ListController', ['$scope', '$location', '$http', '$cookieStore',
     ($scope, $location, $http: ng.IHttpService, $cookieStore) => {
         var socket = io.connect('ws://dp.prgrssv.net:8000/');
-        socket.on('/channels', (data: any[]) =>
-            $scope.$apply(() => $scope.channels = data.map(x => {
-                x['time'] = putil.secondsToHoursMinutes(x.host.uptime);
-                return x;
-            })));
-        socket.on('/done-channels', data => {
-            $scope.$apply(() => $scope.doneChannels = data);
+        socket.on('post', data => {
+            for (var key in data) {
+                switch (key) {
+                    case '/channels':
+                        $scope.$apply(() => $scope.channels = data[key].map(x => {
+                            x['time'] = putil.secondsToHoursMinutes(x.host.uptime);
+                            return x;
+                        }));
+                        break;
+                    case '/done-channels':
+                        $scope.$apply(() => $scope.doneChannels = data[key]);
+                        break;
+                }
+            }
         });
 
         $scope.port = $cookieStore.get('port') || 7144;
         $scope.$watch('port', () => $cookieStore.put('port', $scope.port));
+
+        $scope.update = () => {
+            $scope.channels = null;
+            $scope.doneChannels = null;
+            socket.emit('get', ['/channels', '/done-channels']);
+        };
     }]);
 
 angular.bootstrap(<any>document, ['app']);
