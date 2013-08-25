@@ -1,8 +1,9 @@
 /// <reference path="../../DefinitelyTyped/angularjs/angular.d.ts"/>
 import putil = require('./common/util');
+declare var io;
 
 var app = angular.module('app', ['ngRoute', 'ngCookies', 'ngAnimate']);
-app.config(<any>['$locationProvider', '$routeProvider',
+app.config(['$locationProvider', '$routeProvider',
     ($locationProvider: ng.ILocationProvider,
         $routeProvider: ng.IRouteProvider) => {
         $locationProvider.html5Mode(true);
@@ -26,15 +27,18 @@ app.controller('ApplicationController', ['$scope', '$location',
     }]);
 app.controller('ListController', ['$scope', '$location', '$http', '$cookieStore',
     ($scope, $location, $http: ng.IHttpService, $cookieStore) => {
-        $http.get('/channels.json').success((data: any[]) =>
-            $scope.channels = data.map(x => {
+        var socket = io.connect('ws://dp.prgrssv.net:8000/');
+        socket.on('/channels', (data: any[]) =>
+            $scope.$apply(() => $scope.channels = data.map(x => {
                 x['time'] = putil.secondsToHoursMinutes(x.host.uptime);
                 return x;
-            }));
-        $http.get('/done-channels.json').success(data =>
-            $scope.doneChannels = data);
+            })));
+        socket.on('/done-channels', data => {
+            $scope.$apply(() => $scope.doneChannels = data);
+        });
+
         $scope.port = $cookieStore.get('port') || 7144;
-        $scope.$watch('port', () => $cookieStore.put('port', $scope.port));// ‘½•ª“®‚­‚Í‚¸
+        $scope.$watch('port', () => $cookieStore.put('port', $scope.port));
     }]);
 
 angular.bootstrap(<any>document, ['app']);

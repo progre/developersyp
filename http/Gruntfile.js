@@ -112,7 +112,7 @@ module.exports = function(grunt) {
       tsd: {
         cmd: function() {
           var dependencies = [
-            'express', 'node', 'angular', 'jquery', 'requirejs'
+            'express', 'node', 'angular', 'jquery', 'requirejs', 'socket.io'
           ];
           return 'tsd install ' + dependencies.join(' ');
         }

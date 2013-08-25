@@ -2,6 +2,7 @@ import http = require('http');
 import path = require('path');
 import express = require('express');
 var ioClient = require('socket.io-client');
+import io = require('socket.io');
 var log4js = require('log4js');
 import routes = require('./routes/index');
 import ch = require('./../domain/entity/channel');
@@ -44,7 +45,14 @@ function execute(ipaddress: string, port: number, publicPath: string) {
         app.use(express.errorHandler());
     });
 
-    http.createServer(app).listen(port, ipaddress, null, function () {
+    var server = http.createServer(app);
+
+    var ws = io.listen(server, { 'log level': 1 }, () => { });
+    ws.on('connection', socket => {
+        new routes.WebSocket(socket);
+    });
+
+    server.listen(port, ipaddress, null, function () {
         console.log("Express server listening on port " + port);
     });
 

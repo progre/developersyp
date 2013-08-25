@@ -118,3 +118,12 @@ function toIndex(channel: ch.Channel) {
         + channel.info.comment + '<>'
         + (channel.host.direct ? '1' : '0') + '\n';
 }
+
+export class WebSocket {
+    constructor(socket: any) {
+        rootserver.getIndexJsonAsync(channels =>
+            socket.emit('/channels', convertForYP(channels || [])));
+        db.doneChannels.toArray(doneChannels =>
+            socket.emit('/done-channels', convertForYP2(doneChannels || [])));
+    }
+}
