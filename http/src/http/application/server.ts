@@ -13,28 +13,10 @@ function execute(ipaddress: string, port: number, publicPath: string) {
     var app = express();
 
     app.configure(() => {
-        app.set('views', __dirname + '/../userinterface');
-        app.set('view engine', 'jade');
-        //app.locals.pretty = true; // ãY—í‚È.html‚ð“f‚­
-
         for (var dirPath in routes.routings) {
             app.get(dirPath, routes.routings[dirPath]);
         }
-        //app.get('/env', (req, res) => {
-        //    var content = 'Version: ' + process.version + '\n<br/>\n' +
-        //        'Env: {<br/>\n<pre>';
-        //    for (var k in process.env) {
-        //        content += ' ' + k + ': ' + process.env[k] + '\n';
-        //    }
-        //    content += '}\n</pre><br/>\n'
-        //    res.send('<html>\n' +
-        //        ' <head><title>Node.js Process Env</title></head>\n' +
-        //        ' <body>\n<br/>\n' + content + '</body>\n</html>');
-        //});
 
-        app.use(express.favicon());
-        app.use(express.bodyParser());
-        app.use(express.methodOverride());
         app.use((req, res, next) => {
             logger.info([
                 req.headers['x-forwarded-for'] || req.client.remoteAddress,
@@ -47,11 +29,13 @@ function execute(ipaddress: string, port: number, publicPath: string) {
             ].join('\t'));
             next();
         });
+        app.use(express.favicon());
+        app.use(express.bodyParser());
+        app.use(express.methodOverride());
         app.use(app.router);
         app.use(express.static(publicPath));
-        app.use((req, res, next) => {
-            res.status(404);
-            res.render('404', {});
+        app.use((req, res) => {
+            res.sendfile(publicPath + '/partials/layout.html');
         });
     });
 
@@ -64,7 +48,8 @@ function execute(ipaddress: string, port: number, publicPath: string) {
         console.log("Express server listening on port " + port);
     });
 
-    connectWebSocket();
+    if (process.env.NODE_ENV === 'production')
+        connectWebSocket();
 }
 
 function connectWebSocket(): void {

@@ -1,0 +1,41 @@
+doctype 5
+head
+  title Developer's YP
+  link(rel='stylesheet', href='//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap.min.css')
+  link(rel='stylesheet', href='//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css')
+  link(rel='stylesheet', href='/stylesheets/style.css')
+  script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular.min.js')
+  script(src='https://ajax.googleapis.com/ajax/libs/angularjs/1.0.7/angular-cookies.min.js')
+  script(src='//cdnjs.cloudflare.com/ajax/libs/require.js/2.1.8/require.min.js', data-main='/scripts/layout')
+  script(src='//code.jquery.com/jquery-2.0.0.min.js')
+  script(src='//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/js/bootstrap.js')
+  if debug
+    script(src='//localhost:35729/livereload.js')
+body(ng-controller='ApplicationController')
+  nav.navbar.navbar-inverse.navbar-fixed-top(role='navigation')
+    .navbar-header
+      button.navbar-toggle(type='button', data-toggle='collapse', data-target='.navbar-ex1-collapse')
+        span.sr-only Toggle navigation
+        span.icon-bar
+        span.icon-bar
+        span.icon-bar
+      a.navbar-brand(href='/')
+        |Developer's YP(β)
+    .collapse.navbar-collapse.navbar-ex1-collapse
+      ul.nav.navbar-nav
+        li(ng-class='getClass("/list.html")')
+          a(href='list.html')
+            チャンネルリスト
+        li(ng-class='getClass("/info.html")')
+          a(href='info.html')
+            このサービスについて
+  main.container(ng-view)
+    div(style='text-align: center; margin: 40px auto')
+      i.icon-spinner.icon-spin.icon-4x
+  footer
+    .row
+      .col-md-12
+        p.pull-right
+          span.text-muted.pull-right © 2013 <a href='https://twitter.com/progremaster'>ぷろぐれ</a>. All rights reserved
+        p このサイトを利用して発生したいかなる問題もサイト運営者は責任を負いません
+        //a(href='terms.html') 利用規約

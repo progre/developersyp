@@ -1,4 +1,7 @@
 module.exports = function(grunt) {
+  var serverJs = ['src/app.ts', 'src/common/**/*.ts', 'src/http/**/*.ts'];
+  var clientJs = ['src/public/**/*.ts'];
+
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     develop: {
@@ -9,20 +12,64 @@ module.exports = function(grunt) {
       }
     },
     watch: {
-      ts: {
-        files: [
-          'src/**/*.ts'
-        ],
-        tasks: ['typescript', 'develop'],
-        options: { nospawn: true }
+      jade: {
+        files: ['src/public/**/*.jade'],
+        tasks: ['jade'],
+        options: {
+          livereload: true
+        }
       },
       stylus: {
         files: ['src/public/stylesheets/*.styl'],
-        tasks: ['stylus', 'delayed-livereload']
+        tasks: ['stylus'],
+        options: {
+          livereload: true
+        }
       },
-      jade: {
-        files: ['views/*.jade'],
-        tasks: ['livereload']
+      typescript_server: {
+        files: serverJs,
+        tasks: ['typescript'],
+        options: {
+          livereload: true
+        }
+      },
+      typescript_client: {
+        files: clientJs,
+        tasks: ['typescript:client'],
+        options: {
+          livereload: true
+        }
+      },
+      public: {
+        files: ['public/*.*'],
+        options: {
+          livereload: true
+        }
+      }
+    },
+    jade: {
+      release: {
+        files: grunt.file.expandMapping(
+          ['src/public/**/*.jade'], 'public/', {
+            rename: function(destBase, destPath) {
+              return destBase + destPath.replace(/^src\/public\//, '').replace(/\.jade$/, ".html");
+            }
+          }
+        )
+      },
+      debug: {
+        options: {
+          data: {
+            debug: true
+          }
+        },
+        files: grunt.file.expandMapping(
+          ['src/public/**/*.jade'], 'public/', {
+            rename: function(destBase, destPath) {
+              return destBase + destPath.replace(/^src\/public\//, '').replace(/\.jade$/, ".html");
+            }
+          }
+        )
       }
     },
     stylus: {
@@ -36,11 +83,23 @@ module.exports = function(grunt) {
       }
     },
     typescript: {
-      base: {
-        src: ['src/**/*.ts'],
+      server: {
+        src: serverJs,
         dest: '',
         options: {
-          module: 'commonjs',//          module: 'amd', //or commonjs
+          module: 'commonjs', //          module: 'amd', //or commonjs
+          target: 'es5', //or es3
+          base_path: 'src',
+          sourcemap: true,
+          fullSourceMapPath: true
+          //          declaration: true
+        }
+      },
+      client: {
+        src: clientJs,
+        dest: '',
+        options: {
+          module: 'amd', //          module: 'amd', //or commonjs
           target: 'es5', //or es3
           base_path: 'src',
           sourcemap: true,
@@ -53,7 +112,7 @@ module.exports = function(grunt) {
       tsd: {
         cmd: function() {
           var dependencies = [
-            'express', 'node'
+            'express', 'node', 'angular', 'jquery', 'requirejs'
           ];
           return 'tsd install ' + dependencies.join(' ');
         }
@@ -86,24 +145,30 @@ module.exports = function(grunt) {
   });
   grunt.loadNpmTasks('grunt-develop');
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-livereload');
   grunt.loadNpmTasks('grunt-contrib-stylus');
   grunt.loadNpmTasks('grunt-typescript');
   grunt.loadNpmTasks('grunt-exec');
   grunt.loadNpmTasks('grunt-contrib-copy');
+  grunt.loadNpmTasks('grunt-contrib-jade');
 
   grunt.registerTask('default', [
-    'livereload-start',
-    'stylus',
-    'typescript',
+    'debug-build',
     'develop',
     'watch'
   ]);
-
   grunt.registerTask('deploy', [
-    'stylus',
-    'typescript',
+    'release-build',
     'copy',
     'exec:deploy'
+  ]);
+  grunt.registerTask('debug-build', [
+    'jade:debug',
+    'stylus',
+    'typescript',
+  ]);
+  grunt.registerTask('release-build', [
+    'jade:release',
+    'stylus',
+    'typescript',
   ]);
 };

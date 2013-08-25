@@ -34,28 +34,6 @@ var SERVER_COMMENT = {
 };
 
 export var routings = {
-    '/': (req, res) => {
-        res.render('index', { name: 'index' });
-    },
-    '/list.html': (req, res) => {
-        rootserver.getIndexJsonAsync(channels => {
-            channels = channels || [];
-
-            db.doneChannels.toArray(doneChannels => {
-                res.render('list', {
-                    name: 'list',
-                    channels: convertForYP(channels),
-                    doneChannels: convertForYP2(doneChannels || [])
-                });
-            });
-        });
-    },
-    '/info.html': (req, res) => {
-        res.render('info', { name: 'info' });
-    },
-    '/terms.html': (req, res) => {
-        res.render('terms', { name: 'terms' });
-    },
     '/index.txt': (req: ExpressServerRequest, res: ExpressServerResponse) => {
         rootserver.getIndexJsonAsync(channels => {
             if (channels == null) {
@@ -67,10 +45,19 @@ export var routings = {
             var content = '';
             content += toIndex(SERVER_COMMENT);
             convertForYP(channels).forEach((channel: ch.Channel) => {
+                channel['time'] = putil.secondsToHoursMinutes(channel.host.uptime);
                 content += toIndex(channel);
             });
             res.send(200, content);
         });
+    },
+    '/channels.json': (req, res) => {
+        rootserver.getIndexJsonAsync(channels =>
+            res.send(200, convertForYP(channels || [])));
+    },
+    '/done-channels.json': (req, res) => {
+        db.doneChannels.toArray(doneChannels =>
+            res.send(200, convertForYP2(doneChannels || [])));
     }
 }
 
@@ -82,7 +69,6 @@ function convertForYP(channels: ch.Channel[]) {
             x.host.listeners = -1;
             x.host.relays = -1;
         }
-        x['time'] = toHoursMinutes(x.host.uptime);
         return x;
     });
 }
@@ -127,15 +113,8 @@ function toIndex(channel: ch.Channel) {
         + channel.track.title + '<>'
         + channel.track.url + '<>'
         + encodeURI(channel.info.name) + '<>'
-        + toHoursMinutes(channel.host.uptime) + '<>'
+        + putil.secondsToHoursMinutes(channel.host.uptime) + '<>'
         + 'click' + '<>'
         + channel.info.comment + '<>'
         + (channel.host.direct ? '1' : '0') + '\n';
-}
-
-function toHoursMinutes(sec: number) {
-    var minutes = sec / 60 | 0;
-    var h = minutes / 60 | 0;
-    var m = minutes - h * 60 | 0;
-    return h + ':' + putil.padLeft("" + m, 2, '0');
 }
