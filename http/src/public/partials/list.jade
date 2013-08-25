@@ -3,13 +3,40 @@
     label.col-md-offset-1.col-md-1.control-label(for='port-input') ポート:
     .col-md-2
       input.form-control.input-sm(type='number', min='1', max='65535', value='7144', ng-model='port')
+style
+  .repeat.ng-enter, .repeat.ng-leave, .repeat.ng-move {
+    -webkit-transition: all linear 0.1s;
+    -moz-transition: all linear 0.1s;
+    -o-transition: all linear 0.1s;
+    transition: all linear 0.1s;
+  }
+  .repeat.ng-enter {
+    opacity: 0;
+    -webkit-transform: scaleY(0);
+    -moz-transform: scaleY(0);
+  }
+  .repeat.ng-enter.ng-enter-active {
+    opacity: 1;
+    -webkit-transform: scaleY(1);
+    -moz-transform: scaleY(1);
+  }
+  .repeat.ng-leave {
+    opacity: 1;
+    -webkit-transform: scaleY(1);
+    -moz-transform: scaleY(1);
+  }
+  .repeat.ng-leave.ng-leave-active {
+    opacity: 0;
+    -webkit-transform: scaleY(0);
+    -moz-transform: scaleY(0);
+  }
 table.table
   caption ライブ配信中
   tr
-    th.col-md-1
-    th.col-md-9 Channel
-    th.col-md-1 Status
-    th.col-md-1 Type
+    th.col-sm-1
+    th.col-sm-9 Channel
+    th.col-sm-1 Status
+    th.col-sm-1 Type
     //- tr
     //-   td
     //-   td
@@ -18,7 +45,7 @@ table.table
     //-     a(href='info.html') チャンネルを掲載するには？
     //-   td
     //-   td
-  tr(ng-repeat='channel in channels')
+  tr.repeat(ng-repeat='channel in channels')
     td(style='text-align: center')
       br
       a.play(href='http://localhost:{{port}}/pls/{{channel.id}}?tip={{channel.host.ip}}') Play
@@ -39,9 +66,9 @@ table.table
 table.table(style='margin-top: 80px; color: #aaa')
   caption 最近の配信
   tr
-    th.col-md-1
-    th.col-md-8 Channel
-    th.col-md-3(style='text-align: center') Period
+    th.col-sm-1
+    th.col-sm-8 Channel
+    th.col-sm-3(style='text-align: center') Period
   tr(ng-repeat='dc in doneChannels')
     td
     td

@@ -1,7 +1,7 @@
 /// <reference path="../../DefinitelyTyped/angularjs/angular.d.ts"/>
 import putil = require('./common/util');
 
-var app = angular.module('app', ['ngCookies']);
+var app = angular.module('app', ['ngRoute', 'ngCookies', 'ngAnimate']);
 app.config(<any>['$locationProvider', '$routeProvider',
     ($locationProvider: ng.ILocationProvider,
         $routeProvider: ng.IRouteProvider) => {
