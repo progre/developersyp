@@ -6,6 +6,7 @@ public/components
 *.js
 *.css
 *.log*
+*.html
 secret.json
 
 !Gruntfile.js

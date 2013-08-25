@@ -24,8 +24,8 @@ app.controller('ApplicationController', ['$scope', '$location',
         $scope.getClass = (path) =>
             $location.path().substr(0, path.length) === path ? 'active' : ''
     }]);
-app.controller('ListController', ['$scope', '$location', '$http', '$cookies',
-    ($scope, $location, $http: ng.IHttpService, $cookies) => {
+app.controller('ListController', ['$scope', '$location', '$http', '$cookieStore',
+    ($scope, $location, $http: ng.IHttpService, $cookieStore) => {
         $http.get('/channels.json').success((data: any[]) =>
             $scope.channels = data.map(x => {
                 x['time'] = putil.secondsToHoursMinutes(x.host.uptime);
@@ -33,8 +33,8 @@ app.controller('ListController', ['$scope', '$location', '$http', '$cookies',
             }));
         $http.get('/done-channels.json').success(data =>
             $scope.doneChannels = data);
-        $scope.port = $cookies.port || 7144;
-        $scope.$watch('port', () => $cookies.port = $scope.port);// ‘½•ª“®‚­‚Í‚¸
+        $scope.port = $cookieStore.get('port') || 7144;
+        $scope.$watch('port', () => $cookieStore.put('port', $scope.port));// ‘½•ª“®‚­‚Í‚¸
     }]);
 
 angular.bootstrap(<any>document, ['app']);

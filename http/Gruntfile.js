@@ -126,7 +126,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           src: [
-            'public/**', '**/userinterface/**',
+            'public/**',
             '**/*.js', 'package.json',
             '!dist/**', '!node_modules/**', '!Gruntfile.js', '!**/*.map'
           ],
