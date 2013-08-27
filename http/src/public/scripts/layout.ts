@@ -28,19 +28,20 @@ app.controller('ApplicationController', ['$scope', '$location',
 app.controller('ListController', ['$scope', '$location', '$http', '$cookieStore',
     ($scope, $location, $http: ng.IHttpService, $cookieStore) => {
         var socket = io.connect('ws://dp.prgrssv.net:8000/');
+        socket.emit('get', ['/channels', '/done-channels']);
         socket.on('post', data => {
-            for (var key in data) {
-                switch (key) {
-                    case '/channels':
-                        $scope.$apply(() => $scope.channels = data[key].map(x => {
-                            x['time'] = putil.secondsToHoursMinutes(x.host.uptime);
-                            return x;
-                        }));
-                        break;
-                    case '/done-channels':
-                        $scope.$apply(() => $scope.doneChannels = data[key]);
-                        break;
-                }
+            for (var key in data) switch (key) {
+                case '/channels':
+                    var channels = data[key].map(x => {
+                        x['time'] = putil.secondsToHoursMinutes(x.host.uptime);
+                        return x;
+                    });
+                    $scope.$apply(() => $scope.channels = channels);
+                    break;
+                case '/done-channels':
+                    var doneChannels = data[key];
+                    $scope.$apply(() => $scope.doneChannels = doneChannels);
+                    break;
             }
         });
 

@@ -127,7 +127,7 @@ export class WebSocket {
                     switch (data) {
                         case '/channels':
                             rootserver.getIndexJsonAsync(channels =>
-                                socket.emit('post', { '/channel': convertForYP(channels || []) }));
+                                socket.emit('post', { '/channels': convertForYP(channels || []) }));
                             break;
                         case '/done-channels':
                             db.doneChannels.toArray(doneChannels =>
@@ -137,10 +137,5 @@ export class WebSocket {
                 });
             }
         });
-
-        rootserver.getIndexJsonAsync(channels =>
-            socket.emit('post', { '/channels': convertForYP(channels || []) }));
-        db.doneChannels.toArray(doneChannels =>
-            socket.emit('post', { '/done-channels': convertForYP2(doneChannels || []) }));
     }
 }
