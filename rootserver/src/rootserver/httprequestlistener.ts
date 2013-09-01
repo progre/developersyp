@@ -97,18 +97,14 @@ function slim(channel: ch.Channel) {
         return null;
     }
     var host = putil.firstOrUndefined(channel.hosts);
-    if (host == null) {
-        logger.error('host is null. ' + JSON.stringify(channel));
-        return null;
-    }
-    return slim2(channel.channelId, info, host.info, channel.track);
+    return slim2(channel.channelId, info, host == null ? null : host.info, channel.track);
 }
 
 function slim2(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
     return {
-        id: id.toString(),
+        id: hostInfo == null ? '00000000000000000000000000000000' : id.toString(),
         info: {
-            name: info.get(pcp.CHAN_INFO_NAME),
+            name: hostInfo == null ? info.get(pcp.CHAN_INFO_NAME) + ' (incoming...)' : info.get(pcp.CHAN_INFO_NAME),
             url: info.get(pcp.CHAN_INFO_URL),
             genre: info.get(pcp.CHAN_INFO_GENRE),
             desc: info.get(pcp.CHAN_INFO_DESC),
@@ -116,12 +112,14 @@ function slim2(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
             type: info.get(pcp.CHAN_INFO_TYPE),
             comment: info.get(pcp.CHAN_INFO_COMMENT)
         },
-        host: {
+        host: hostInfo == null ? {
+            ip: '', listeners: 0, relays: 0, direct: false, uptime: 0
+        } : {
             ip: joinIpPort(first(hostInfo.get(pcp.HOST_IP)), first2(hostInfo.get(pcp.HOST_PORT))),
-            listeners: hostInfo.get(pcp.HOST_NUML),
-            relays: hostInfo.get(pcp.HOST_NUMR),
+            listeners: <number>hostInfo.get(pcp.HOST_NUML),
+            relays: <number>hostInfo.get(pcp.HOST_NUMR),
             direct: ((<number>hostInfo.get(pcp.HOST_FLAGS1)) & pcp.HOST_FLAGS1_DIRECT) != 0,
-            uptime: hostInfo.get(pcp.HOST_UPTIME)
+            uptime: <number>hostInfo.get(pcp.HOST_UPTIME)
         },
         track: track == null ? null : {
             creator: track.get(pcp.CHAN_TRACK_CREATOR),

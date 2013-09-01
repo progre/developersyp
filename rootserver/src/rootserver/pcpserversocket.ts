@@ -57,13 +57,23 @@ class PcpServerSocket {
                     this.onHelo(atom);
                     break;
                 case ServerState.WAIT_BCST:
+                    if (atom.name === pcp.QUIT) {
+                        if (this.host != null && this.host.broadcastId != null) {
+                            this.server.removeChannelByBroadcastId(this.host.broadcastId);
+                        }
+                        break;
+                    }
                     this.onBcst(atom);
                     break;
                 default:
                     throw new Error('Invalid state error.');
             }
         } catch (e) {
-            // httpが来た時にここにくる
+            if (e != null && e.length != null) {
+                // httpが来た時にここにくる
+                this.logger.info('Invalid Protocol. length: ' + e.length + ', value: ' + e);
+                return;
+            }
             throw e;
         }
     }
@@ -99,7 +109,7 @@ class PcpServerSocket {
     /** クライアントのポート開放確認 */
     private ping(
         sessionId: GID, host: string, pingPort: number,
-        callback: (port: number) => void ) {
+        callback: (port: number) => void) {
 
         var subSocket: net.NodeSocket = <any>net.connect(pingPort, host, () => {
             var content = new Buffer(4);
@@ -151,10 +161,6 @@ class PcpServerSocket {
                     break;
                 case pcp.HOST:
                     this.server.putHost(this.host, child);
-                    break;
-                case pcp.QUIT:
-                    if (this.host != null && this.host.broadcastId != null)
-                        this.server.removeChannelByBroadcastId(this.host.broadcastId);
                     break;
                 case pcp.BCST_TTL:
                 case pcp.BCST_HOPS:

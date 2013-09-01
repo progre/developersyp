@@ -20,7 +20,7 @@ export class PcpReader {
                 return null;
             this.header.name = buffer.toString('utf8');
             if (this.header.name !== 'pcp\n')
-                throw new Error('buffer');
+                throw this.header.name;
         }
         if (this.header.length < 0) {
             var buffer = readable.read(4);
