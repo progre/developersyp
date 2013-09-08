@@ -65,7 +65,10 @@ export class WebSocket {
     deleteChannel(channel: ch.Channel) {
         if (this.socket == null)
             return;
-        this.socket.emit('deleteChannel', slim(channel));
+        var s = slim(channel);
+        if (s.info.genre.match(/^dp.*$/) == null)
+            return;
+        this.socket.emit('deleteChannel', s);
     }
 }
 
@@ -74,6 +77,8 @@ function toSlims(channels: Channels) {
     for (var key in channels) {
         var s = slim(channels[key]);
         if (s == null)
+            continue;
+        if (s.info.genre.match(/^dp.*$/) == null)
             continue;
         slims.push(s);
     }
@@ -106,7 +111,7 @@ function slim2(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
         info: {
             name: hostInfo == null ? info.get(pcp.CHAN_INFO_NAME) + ' (incoming...)' : info.get(pcp.CHAN_INFO_NAME),
             url: info.get(pcp.CHAN_INFO_URL),
-            genre: info.get(pcp.CHAN_INFO_GENRE),
+            genre: <string>info.get(pcp.CHAN_INFO_GENRE),
             desc: info.get(pcp.CHAN_INFO_DESC),
             bitrate: info.get(pcp.CHAN_INFO_BITRATE),
             type: info.get(pcp.CHAN_INFO_TYPE),
