@@ -14,10 +14,6 @@ function execute(ipaddress: string, port: number, publicPath: string) {
     var app = express();
 
     app.configure(() => {
-        for (var dirPath in routes.routings) {
-            app.get(dirPath, routes.routings[dirPath]);
-        }
-
         app.use((req, res, next) => {
             logger.info([
                 req.headers['x-forwarded-for'] || req.client.remoteAddress,
@@ -38,6 +34,10 @@ function execute(ipaddress: string, port: number, publicPath: string) {
         app.use((req, res) => {
             res.sendfile(publicPath + '/partials/layout.html');
         });
+
+        for (var dirPath in routes.routings) {
+            app.get(dirPath, routes.routings[dirPath]);
+        }
     });
 
     app.configure('development', () => {

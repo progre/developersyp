@@ -21,7 +21,8 @@ export function getIndexJsonAsync(callback: (channels: ch.Channel[]) => void ): 
             callback(JSON.parse(body));
         });
     });
-    req.setTimeout(10 * 1000, () => {
+    req.setTimeout(3 * 1000, () => {
+        req.abort();
         callback(null);
     });
     req.on('error', e => {
