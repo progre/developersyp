@@ -77,6 +77,8 @@ function convertForYP2(doneChannels: ch.DoneChannel[]) {
     return doneChannels.map(x => {
         var options = parseGenre(x.channel.info.genre);
         x.channel.info.genre = options.genre;
+        x.channel.info.desc = x.channel.info.desc.replace(/\d+\.\d+\.\d+\.\d+/, '*.*.*.*');// IP隠し
+        x.channel.info.comment = x.channel.info.comment.replace(/\d+\.\d+\.\d+\.\d+/, '*.*.*.*');
         x['beginText'] = format(x.begin);
         x['endText'] = format(x.end);
         return x;
