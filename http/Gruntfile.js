@@ -1,5 +1,5 @@
 module.exports = function(grunt) {
-  var serverJs = ['src/app.ts', 'src/common/**/*.ts', 'src/http/**/*.ts'];
+  var serverJs = ['src/server.ts', 'src/common/**/*.ts', 'src/http/**/*.ts'];
   var clientJs = ['src/public/**/*.ts'];
 
   grunt.initConfig({
