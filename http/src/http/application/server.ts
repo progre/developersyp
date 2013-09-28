@@ -1,12 +1,10 @@
 import http = require('http');
 import path = require('path');
 import express = require('express');
-var ioClient = require('socket.io-client');
 import io = require('socket.io');
 var log4js = require('log4js');
 import routes = require('./routes/index');
 import ch = require('./../domain/entity/channel');
-import db = require('./../infrastructure/database');
 
 export = execute;
 function execute(ipaddress: string, port: number, publicPath: string) {
@@ -54,44 +52,6 @@ function execute(ipaddress: string, port: number, publicPath: string) {
 
     server.listen(port, ipaddress, null, function () {
         console.log("Express server listening on port " + port);
-    });
-
-    if (process.env.NODE_ENV === 'production')
-        connectWebSocket();
-}
-
-function connectWebSocket(): void {
-    var logger = log4js.getLogger('app');
-    logger.info('connecting...');
-    var server = ioClient.connect('ws://root-dp.prgrssv.net:7180', {
-        'force new connection': true
-    });
-    var connected = false;
-    server.on('connect', () => {
-        logger.info('connected.');
-        connected = true;
-        server.on('deleteChannel', (channel: ch.Channel) => {
-            var end = new Date();
-            var begin = new Date(end.getTime());
-            begin.setSeconds(begin.getSeconds() - channel.host.uptime);
-            db.doneChannels.add({
-                begin: begin,
-                end: end,
-                channel: channel
-            });
-        });
-        server.on('disconnect', () => {
-            logger.info('disconnect');
-            connectWebSocket();
-        });
-    });
-    server.on('error', err => {
-        logger.error(JSON.stringify(err));
-        server.disconnect();
-        if (connected) {
-            return;
-        }
-        connectWebSocket();
     });
 }
 

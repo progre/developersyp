@@ -57,7 +57,7 @@ table.table
     td
       div
         a(href='{{channel.info.url}}') {{channel.info.name}}<br>
-        |[{{channel.info.genre}}<span ng-show='channel.info.genre.length > 0 && channel.info.desc.length > 0'> - </span>{{channel.info.desc}}]<br>
+        |[{{channel.info.parsedGenre}}<span ng-show='channel.info.parsedGenre.length > 0 && channel.info.desc.length > 0'> - </span>{{channel.info.desc}}]<br>
         span(ng-show='channel.info.comment.length > 0')
           |「{{channel.info.comment}}」
     td(style='text-align: center')
@@ -85,7 +85,7 @@ table.table(style='margin-top: 80px; color: #aaa')
     td
       div
         a(href='{{dc.channel.info.url}}') {{dc.channel.info.name}}<br>
-        |[{{dc.channel.info.genre}}<span ng-show='dc.channel.info.genre.length > 0 && dc.channel.info.desc.length > 0'> - </span>{{dc.channel.info.desc}}]<br>
+        |[{{dc.channel.info.parsedGenre}}<span ng-show='dc.channel.info.parsedGenre.length > 0 && dc.channel.info.desc.length > 0'> - </span>{{dc.channel.info.desc}}]<br>
         span(ng-show='dc.channel.info.comment.length > 0')
           |「{{dc.channel.info.comment}}」
     td(style='text-align: center')

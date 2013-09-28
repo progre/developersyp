@@ -66,8 +66,6 @@ export class WebSocket {
         if (this.socket == null)
             return;
         var s = slim(channel);
-        if (s.info.genre.match(/^dp.*$/) == null)
-            return;
         this.socket.emit('deleteChannel', s);
     }
 }
