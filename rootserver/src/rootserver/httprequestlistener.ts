@@ -107,10 +107,10 @@ function slim2(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
     return {
         id: hostInfo == null ? '00000000000000000000000000000000' : id.toString(),
         info: {
-            name: hostInfo == null ? info.get(pcp.CHAN_INFO_NAME) + ' (incoming...)' : info.get(pcp.CHAN_INFO_NAME),
+            name: info.get(pcp.CHAN_INFO_NAME),
             url: info.get(pcp.CHAN_INFO_URL),
             genre: <string>info.get(pcp.CHAN_INFO_GENRE),
-            desc: info.get(pcp.CHAN_INFO_DESC),
+            desc: hostInfo == null ? '(incoming...) ' + info.get(pcp.CHAN_INFO_DESC) : info.get(pcp.CHAN_INFO_DESC),
             bitrate: info.get(pcp.CHAN_INFO_BITRATE),
             type: info.get(pcp.CHAN_INFO_TYPE),
             comment: info.get(pcp.CHAN_INFO_COMMENT)
