@@ -33,27 +33,29 @@ var SERVER_COMMENT = {
     }
 };
 
+// このへんの処理はクラスにすべき
+if (process.env.NODE_ENV === 'production')
+    var rootServerIndexRepository = new rootserver.RootServerIndexRepository();
+
 export var routings = {
     '/index.txt': (req: ExpressServerRequest, res: ExpressServerResponse) => {
-        rootserver.getIndexJsonAsync(channels => {
-            if (channels == null) {
-                var maintenance = clone(SERVER_COMMENT);
-                maintenance.info.comment = '只今サーバーのメンテナンス中です';
-                res.send(200, toIndex(maintenance));
-                return;
-            }
-            var content = '';
-            content += toIndex(SERVER_COMMENT);
-            convertForYP(channels).forEach((channel: ch.Channel) => {
-                channel['time'] = putil.secondsToHoursMinutes(channel.host.uptime);
-                content += toIndex(channel);
-            });
-            res.send(200, content);
+        var channels = rootServerIndexRepository.channels;
+        if (channels == null) {
+            var maintenance = clone(SERVER_COMMENT);
+            maintenance.info.comment = '只今サーバーのメンテナンス中です';
+            res.send(200, toIndex(maintenance));
+            return;
+        }
+        var content = '';
+        content += toIndex(SERVER_COMMENT);
+        convertForYP(channels).forEach((channel: ch.Channel) => {
+            channel['time'] = putil.secondsToHoursMinutes(channel.host.uptime);
+            content += toIndex(channel);
         });
+        res.send(200, content);
     },
     '/channels.json': (req, res) => {
-        rootserver.getIndexJsonAsync(channels =>
-            res.send(200, convertForYP(channels || [])));
+        res.send(200, convertForYP(rootServerIndexRepository.channels || []));
     },
     '/done-channels.json': (req, res) => {
         db.doneChannels.toArray(doneChannels =>
@@ -64,7 +66,7 @@ export var routings = {
 function convertForYP(channels: ch.Channel[]) {
     return channels.filter(x => x.info.type != null).map(x => {
         var options = parseGenre(x.info.genre);
-        x.info.genre = options.genre;
+        x.info['parsedGenre'] = options.genre;
         if (options.isListenerInvisible) {
             x.host.listeners = -1;
             x.host.relays = -1;
@@ -76,7 +78,7 @@ function convertForYP(channels: ch.Channel[]) {
 function convertForYP2(doneChannels: ch.DoneChannel[]) {
     return doneChannels.map(x => {
         var options = parseGenre(x.channel.info.genre);
-        x.channel.info.genre = options.genre;
+        x.channel.info['parsedGenre'] = options.genre;
         x.channel.info.desc = x.channel.info.desc.replace(/\d+\.\d+\.\d+\.\d+/, '*.*.*.*');// IP隠し
         x.channel.info.comment = x.channel.info.comment.replace(/\d+\.\d+\.\d+\.\d+/, '*.*.*.*');
         x['beginText'] = format(x.begin);
@@ -104,7 +106,7 @@ function toIndex(channel: ch.Channel) {
         + channel.id + '<>'
         + channel.host.ip + '<>'
         + channel.info.url + '<>'
-        + channel.info.genre + '<>'
+        + channel.info['parsedGenre'] + '<>'
         + channel.info.desc + '<>'
         + channel.host.listeners + '<>'
         + channel.host.relays + '<>'
