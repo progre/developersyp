@@ -13,6 +13,7 @@ var SERVER_COMMENT = {
         name: 'DP - お知らせ',
         url: 'http://dp.prgrssv.net/',
         genre: '試験運用中',
+        parsedGenre: '試験運用中',
         desc: '2013/8/4 Powered by node.',
         bitrate: 0,
         type: 'RAW',
