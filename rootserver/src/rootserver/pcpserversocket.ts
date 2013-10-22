@@ -72,6 +72,10 @@ class PcpServerSocket {
             if (e != null && e.length != null) {
                 // httpが来た時にここにくる
                 this.logger.info('Invalid Protocol. length: ' + e.length + ', value: ' + e);
+                if (e.length === 4 && e.indexOf('GET') === 0) {
+                    this.client.destroy();
+                    this.logger.info('client destroy. ' + this.ip);
+                }
                 return;
             }
             throw e;
