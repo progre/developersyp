@@ -11,7 +11,7 @@ var serverComment = {
     info: {
         name: 'DP◆お知らせ',
         url: 'http://dp.prgrssv.net/',
-        genre: 'DPはプログラムに関わる全ての方が自由に利用できます',
+        genre: '',
         desc: '2013/11/2 Powered by node.',
         bitrate: 0,
         type: 'RAW',
@@ -33,9 +33,10 @@ var serverComment = {
 };
 
 function getServerComment() {
+    serverComment.info.genre = rootServerIndexRepository.channelsLength() + ' channel(s).';
     serverComment.info.comment
-    = 'HTTPサーバー稼働時間: ' + uptimeToString(process.uptime())
-    + ', ROOTサーバー稼働時間: ' + uptimeToString(rootServerIndexRepository.uptime());
+    = 'HTTP server uptime: ' + uptimeToString(process.uptime())
+    + ', Root server uptime: ' + uptimeToString(rootServerIndexRepository.uptime());
     return serverComment;
 }
 
@@ -43,9 +44,9 @@ function uptimeToString(uptime: number) {
     var uptimeSec = uptime | 0;
     var second = uptimeSec % 60;
     var min = (uptimeSec / 60 | 0) % 360;
-    var hour = (uptimeSec / 360 | 0) % 21600;
-    var day = (uptimeSec / 8640 | 0) % 518400;
-    var year = (uptimeSec / 3153600 | 0) % 189216000;
+    var hour = (uptimeSec / 3600 | 0) % 216000;
+    var day = (uptimeSec / 86400 | 0) % 5184000;
+    var year = (uptimeSec / 31536000 | 0) % 1892160000;
     var str = '';
     if (year > 0) {
         str += year + 'year ';

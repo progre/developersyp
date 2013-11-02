@@ -10,7 +10,7 @@ var ROOT_SERVER = 'ws://root-dp.prgrssv.net:7180';
 /** システムで1接続 */
 export class RootServerIndexRepository {
     private connectionStartedAt: Date;
-    channels: ch.Channel[] = null;
+    private channels: ch.Channel[] = null;
 
     constructor() {
         this.connect();
@@ -19,6 +19,10 @@ export class RootServerIndexRepository {
     /** コネクション開始からの時間を秒で返す */
     uptime() {
         return (<any>new Date() - <any>this.connectionStartedAt) / 1000;
+    }
+
+    channelsLength() {
+        return this.channels == null ? 0 : this.channels.length;
     }
 
     getChannels() {
