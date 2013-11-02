@@ -11,8 +11,7 @@ var serverComment = {
     info: {
         name: 'DP◆お知らせ',
         url: 'http://dp.prgrssv.net/',
-        genre: '',
-        parsedGenre: 'DPはプログラムに関わる全ての方が自由に利用できます',
+        genre: 'DPはプログラムに関わる全ての方が自由に利用できます',
         desc: '2013/11/2 Powered by node.',
         bitrate: 0,
         type: 'RAW',
@@ -94,7 +93,7 @@ export var routings = {
 function convertForYP(channels: ch.Channel[]) {
     return channels.map(x => {
         var options = parseGenre(x.info.genre);
-        x.info['parsedGenre'] = options.genre;
+        x.info.genre = options.genre;
         if (options.isListenerInvisible) {
             x.host.listeners = -1;
             x.host.relays = -1;
@@ -138,7 +137,7 @@ function toIndex(channel: ch.Channel) {
         + channel.id + '<>'
         + channel.host.ip + '<>'
         + channel.info.url + '<>'
-        + channel.info['parsedGenre'] + '<>'
+        + channel.info.genre + '<>'
         + channel.info.desc + '<>'
         + channel.host.listeners + '<>'
         + channel.host.relays + '<>'

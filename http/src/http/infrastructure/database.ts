@@ -36,7 +36,7 @@ export module doneChannels {
         connect((err, db) => {
             db.collection('doneChannels', (err, collection) => {
                 var old = new Date();
-                old.setMonth(old.getMonth() - 1);
+                old.setDate(old.getDate() - 15);
                 collection.findAndRemove({
                     end: { $lt: old }
                 }, (err, line) => {// ‚Â‚¢‚Å‚ÉŒÃ‚¢‚à‚Ì‚ðíœ
