@@ -6,15 +6,14 @@ import rootserver = require('./../../infrastructure/rootserver');
 import ch = require('./../../domain/entity/channel');
 import db = require('./../../infrastructure/database');
 
-var ROOT_SERVER = 'http://root-dp.prgrssv.net:7180/snsbt_edimt6wfgkz_y4cmyr-zjru9s449_ybdw8wyt56c3nuggam8428jwm5269';
-var SERVER_COMMENT = {
+var serverComment = {
     id: '00000000000000000000000000000000',
     info: {
-        name: 'DP - お知らせ',
+        name: 'DP◆お知らせ',
         url: 'http://dp.prgrssv.net/',
-        genre: '試験運用中',
-        parsedGenre: '試験運用中',
-        desc: '2013/8/4 Powered by node.',
+        genre: '',
+        parsedGenre: 'DPはプログラムに関わる全ての方が自由に利用できます',
+        desc: '2013/11/2 Powered by node.',
         bitrate: 0,
         type: 'RAW',
         comment: ''
@@ -34,30 +33,58 @@ var SERVER_COMMENT = {
     }
 };
 
+function getServerComment() {
+    serverComment.info.comment
+    = 'HTTPサーバー稼働時間: ' + uptimeToString(process.uptime())
+    + ', ROOTサーバー稼働時間: ' + uptimeToString(rootServerIndexRepository.uptime());
+    return serverComment;
+}
+
+function uptimeToString(uptime: number) {
+    var uptimeSec = uptime | 0;
+    var second = uptimeSec % 60;
+    var min = (uptimeSec / 60 | 0) % 360;
+    var hour = (uptimeSec / 360 | 0) % 21600;
+    var day = (uptimeSec / 8640 | 0) % 518400;
+    var year = (uptimeSec / 3153600 | 0) % 189216000;
+    var str = '';
+    if (year > 0) {
+        str += year + 'year ';
+    }
+    if (day > 0) {
+        str += day + 'day ';
+    }
+    return str + hour + ':'
+        + putil.padLeft(min.toString(), 2, '0') + ':'
+        + putil.padLeft(second.toString(), 2, '0');
+}
+
 // このへんの処理はクラスにすべき
 if (process.env.NODE_ENV === 'production')
     var rootServerIndexRepository = new rootserver.RootServerIndexRepository();
 
 export var routings = {
     '/index.txt': (req: ExpressServerRequest, res: ExpressServerResponse) => {
-        var channels = rootServerIndexRepository.channels;
+        var channels = rootServerIndexRepository.getChannels();
         if (channels == null) {
-            var maintenance = clone(SERVER_COMMENT);
+            var maintenance = clone(getServerComment());
             maintenance.info.comment = '只今サーバーのメンテナンス中です';
             res.send(200, toIndex(maintenance));
             return;
         }
         var content = '';
-        content += toIndex(SERVER_COMMENT);
+        content += toIndex(getServerComment());
         convertForYP(channels).forEach((channel: ch.Channel) => {
             channel['time'] = putil.secondsToHoursMinutes(channel.host.uptime);
             content += toIndex(channel);
         });
         res.send(200, content);
     },
+    // 未使用
     '/channels.json': (req, res) => {
-        res.send(200, convertForYP(rootServerIndexRepository.channels || []));
+        res.send(200, convertForYP(rootServerIndexRepository.getChannels() || []));
     },
+    // 未使用
     '/done-channels.json': (req, res) => {
         db.doneChannels.toArray(doneChannels =>
             res.send(200, convertForYP2(doneChannels || [])));
@@ -65,12 +92,16 @@ export var routings = {
 }
 
 function convertForYP(channels: ch.Channel[]) {
-    return channels.filter(x => x.info.type != null).map(x => {
+    return channels.map(x => {
         var options = parseGenre(x.info.genre);
         x.info['parsedGenre'] = options.genre;
         if (options.isListenerInvisible) {
             x.host.listeners = -1;
             x.host.relays = -1;
+        }
+        if (x.info.bitrate == null) {
+            x.info.bitrate = 0;
+            x.info.name += ' (incoming...)';
         }
         return x;
     });
@@ -131,8 +162,9 @@ export class WebSocket {
                 (<string[]>data).forEach(data => {
                     switch (data) {
                         case '/channels':
-                            rootserver.getIndexJsonAsync(channels =>
-                                socket.emit('post', { '/channels': convertForYP(channels || []) }));
+                            socket.emit('post', {
+                                '/channels': convertForYP(rootServerIndexRepository.getChannels() || [])
+                            });
                             break;
                         case '/done-channels':
                             db.doneChannels.toArray(doneChannels =>

@@ -38,7 +38,10 @@ function onRequest(
         return;
     }
 
-    res.write(JSON.stringify(toSlims(channels)));
+    res.write(JSON.stringify({
+        uptime: process.uptime(),
+        channels: toSlims(channels)
+    }));
     res.end();
 }
 
@@ -105,14 +108,14 @@ function slim(channel: ch.Channel) {
 
 function slim2(id: GID, info: pcp.Atom, hostInfo: pcp.Atom, track: pcp.Atom) {
     return {
-        id: hostInfo == null ? '00000000000000000000000000000000' : id.toString(),
+        id: id.toString(),
         info: {
             name: info.get(pcp.CHAN_INFO_NAME),
             url: info.get(pcp.CHAN_INFO_URL),
             genre: <string>info.get(pcp.CHAN_INFO_GENRE),
-            desc: hostInfo == null ? '(incoming...) ' + info.get(pcp.CHAN_INFO_DESC) : info.get(pcp.CHAN_INFO_DESC),
+            desc: info.get(pcp.CHAN_INFO_DESC),
             bitrate: info.get(pcp.CHAN_INFO_BITRATE),
-            type: info.get(pcp.CHAN_INFO_TYPE),
+            type: info.get(pcp.CHAN_INFO_TYPE) || 'UNKNOWN',
             comment: info.get(pcp.CHAN_INFO_COMMENT)
         },
         host: hostInfo == null ? {
