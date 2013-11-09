@@ -1,4 +1,5 @@
 import http = require('http');
+import fs = require('fs');
 var dateformat = require('dateformat');
 var clone = require('clone');
 import putil = require('./../../../common/util');
@@ -6,13 +7,17 @@ import rootserver = require('./../../infrastructure/rootserver');
 import ch = require('./../../domain/entity/channel');
 import db = require('./../../infrastructure/database');
 
+var updatedAt = toJST(fs.statSync(module.filename).mtime);
+
 var serverComment = {
     id: '00000000000000000000000000000000',
     info: {
         name: 'DP◆お知らせ',
         url: 'http://dp.prgrssv.net/',
         genre: '',
-        desc: '2013/11/2 Powered by node.',
+        desc: '' + updatedAt.getFullYear()
+        + '/' + (updatedAt.getMonth() + 1)
+        + '/' + updatedAt.getDate() + ' Powered by node.',
         bitrate: 0,
         type: 'RAW',
         comment: ''
@@ -43,10 +48,10 @@ function getServerComment() {
 function uptimeToString(uptime: number) {
     var uptimeSec = uptime | 0;
     var second = uptimeSec % 60;
-    var min = (uptimeSec / 60 | 0) % 360;
-    var hour = (uptimeSec / 3600 | 0) % 216000;
-    var day = (uptimeSec / 86400 | 0) % 5184000;
-    var year = (uptimeSec / 31536000 | 0) % 1892160000;
+    var min = (uptimeSec / 60 | 0) % 60;
+    var hour = (uptimeSec / 3600 | 0) % 24;
+    var day = (uptimeSec / 86400 | 0) % 365;
+    var year = uptimeSec / 31536000 | 0;
     var str = '';
     if (year > 0) {
         str += year + 'year ';
@@ -120,9 +125,12 @@ function convertForYP2(doneChannels: ch.DoneChannel[]) {
 }
 
 function format(date: Date) {
-    var jst = new Date(date.getTime());
-    jst.setHours(jst.getHours() + 9);// UTC+9
-    return dateformat(jst, 'UTC:m/dd HH:MM');
+    return dateformat(toJST(new Date(date.getTime())), 'UTC:m/dd HH:MM');
+}
+
+function toJST(date:Date) {
+    date.setHours(date.getHours() + 9);// UTC+9
+    return date
 }
 
 function parseGenre(genre: string) {
