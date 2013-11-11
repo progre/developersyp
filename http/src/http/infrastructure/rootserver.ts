@@ -10,7 +10,8 @@ var ROOT_SERVER = 'ws://root-dp.prgrssv.net:7180';
 /** ƒVƒXƒeƒ€‚Å1Ú‘± */
 export class RootServerIndexRepository {
     private connectionStartedAt: Date;
-    private channels: ch.Channel[] = null;
+    private channels: ch.Channel[] = [];
+    private connected = false;
 
     constructor() {
         this.connect();
@@ -22,27 +23,27 @@ export class RootServerIndexRepository {
     }
 
     channelsLength() {
-        return this.channels == null ? 0 : this.channels.length;
+        return this.channels.length;
     }
 
     getChannels() {
-        if (this.channels == null)
+        if (!this.connected)
             return null;
         return this.channels.map(x => clone(x));
     }
 
     private connect() {
-        this.channels = null;
+        this.channels = [];
         var logger = log4js.getLogger('app');
         logger.info('connecting...');
         var server = socketIoClient.connect(ROOT_SERVER, {
             'force new connection': true
         });
-        var connected = false;
+        this.connected = false;
         server.on('connect', () => {
             logger.info('connected.');
             this.connectionStartedAt = new Date();
-            connected = true;
+            this.connected = true;
 
             server.on('channels', (channels: ch.Channel[]) => {
                 this.channels = channels;
@@ -79,7 +80,7 @@ export class RootServerIndexRepository {
         server.on('error', err => {
             logger.error(JSON.stringify(err));
             server.disconnect();
-            if (connected) {
+            if (this.connected) {
                 return;
             }
             this.connect();
