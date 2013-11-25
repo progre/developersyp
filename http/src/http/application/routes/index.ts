@@ -41,7 +41,7 @@ function getServerComment() {
     serverComment.info.genre = rootServerIndexRepository.channelsLength() + ' channel(s).';
     serverComment.info.comment
     = 'HTTP server uptime: ' + uptimeToString(process.uptime())
-    + ', Root server uptime: ' + uptimeToString(rootServerIndexRepository.uptime());
+    + ', Root server connect time: ' + uptimeToString(rootServerIndexRepository.uptime());
     return serverComment;
 }
 
