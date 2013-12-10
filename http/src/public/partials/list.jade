@@ -32,11 +32,12 @@ table.table
   caption ライブ配信中
   tr
     th.col-sm-1
-    th.col-sm-9 Channel
-    th.col-sm-1 Status
-    th.col-sm-1 Type
+    th.col-sm-8 Channel
+    th.col-sm-1(style='text-align: center') Status
+    th.col-sm-1(style='text-align: center') Type
+    th.col-sm-1(style='text-align: center') Share
   tr(ng-show='channels == null')
-    td(colspan='4')
+    td(colspan='5')
       div(style='text-align: center')
         i.icon-spinner.icon-spin.icon-4x
   tr.animate(ng-show='channels != null && channels.length === 0')
@@ -46,6 +47,7 @@ table.table
         |<br>
         |配信中のチャンネルはありません<br>
         a(href='info.html') チャンネルを掲載するには？
+    td
     td
     td
   tr.animate(ng-repeat='channel in channels')
@@ -70,6 +72,12 @@ table.table
         |{{channel.info.type}}<br>
         |{{channel.info.bitrate}} kbps<!--<br>
         |Free -->
+    td(style='text-align: center')
+      br
+      iframe(
+        allowtransparency='true', frameborder='0', scrolling='no',
+        style='width:68px; height:20px;',
+        ng-src='{{channel.tweetUrl}}')
 table.table(style='margin-top: 80px; color: #aaa')
   caption 最近の配信
   tr

@@ -65,7 +65,7 @@ function uptimeToString(uptime: number) {
 }
 
 // このへんの処理はクラスにすべき
-if (process.env.NODE_ENV === 'production')
+if (process.env.OPENSHIFT_APP_NAME != null) // プロダクトモードの判断が微妙
     var rootServerIndexRepository = new rootserver.RootServerIndexRepository();
 
 export var routings = {
