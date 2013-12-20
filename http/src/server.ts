@@ -8,15 +8,18 @@ var log4js = require('log4js');
 import server = require('./http/application/server');
 
 var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/log'
-if (!fs.existsSync(LOG_DIRECTORY)) {
+try {
     fs.mkdirSync(LOG_DIRECTORY, '777');
+} catch (e) {
 }
+var MEGA = 1048576;
 log4js.configure({
     appenders: [{
         category: 'app',
         type: 'dateFile',
         filename: LOG_DIRECTORY + '/http.log',
-        pattern: '-yyyy-MM-dd'
+        maxLogSize: 50 * MEGA,
+        backups: 3
     }]
 });
 
