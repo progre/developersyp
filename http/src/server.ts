@@ -16,7 +16,7 @@ var MEGA = 1048576;
 log4js.configure({
     appenders: [{
         category: 'app',
-        type: 'dateFile',
+        type: 'file',
         filename: LOG_DIRECTORY + '/http.log',
         maxLogSize: 50 * MEGA,
         backups: 3
