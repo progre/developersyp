@@ -1,6 +1,8 @@
 node_modules/
 dist/
 public/components
+http/src/common
+http/src/public/scripts/common
 .sass-cache
 *.map
 *.js
