@@ -1,6 +1,7 @@
 {
   "name": "Developer's_YP",
   "version": "0.0.0",
+  "private": true,
   "devDependencies": {
     "grunt": "~0.4.4",
     "jit-grunt": "~0.3.2"
