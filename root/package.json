@@ -1,23 +1,16 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
+  "name": "Developer's_YP",
+  "version": "0.0.0",
   "private": true,
-  "scripts": {
-    "start": "node app"
-  },
-  "dependencies": {
-    "log4js": "~0.6.6",
-    "iconv": "~2.0.6",
-    "socket.io": "~0.9.16"
-  },
   "devDependencies": {
-    "tsd": ">=0.3.1",
-    "grunt": ">=0.4.1",
-    "grunt-develop": "~0.1.1",
-    "grunt-exec": "~0.4.1",
-    "grunt-typescript": ">=0.2.0",
-    "grunt-contrib-watch": "~0.5.1",
-    "grunt-ssh": "~0.6.2",
-    "grunt-contrib-copy": "~0.4.1"
+    "grunt": "~0.4.4",
+    "grunt-contrib-watch": "~0.6.0",
+    "grunt-contrib-copy": "~0.5.0",
+    "grunt-shell": "~0.6.4",
+    "grunt-typescript": "~0.2.10",
+    "grunt-develop": "~0.3.0",
+    "grunt-ssh": "~0.11.0",
+    "tsd": "~0.5.6",
+    "grunt-tsd": "0.0.4"
   }
 }

@@ -1,7 +1,37 @@
 module.exports = function(grunt) {
+  require('jit-grunt')(grunt);
+
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
     secret: grunt.file.readJSON('secret.json'),
+
+    shell: {
+      tsd: {
+        command: function() {
+          var dependencies = [
+            'node', 'socket.io'
+          ];
+          return 'tsd install ' + dependencies.join(' ');
+        }
+      }
+    },
+    typescript: {
+      base: {
+        src: ['src/**/*.ts'],
+        dest: 'app/',
+        options: {
+          module: 'commonjs',
+          target: 'es5',
+          basePath: 'src'
+        }
+      }
+    },
+    develop: {
+      server: {
+        file: 'app/app.js',
+        nodeArgs: ['--debug'],
+        args: [7140, 7180]
+      }
+    },
     watch: {
       ts: {
         files: ['src/**/*.ts'],
@@ -11,59 +41,14 @@ module.exports = function(grunt) {
         }
       }
     },
-    develop: {
-      server: {
-        file: 'app.js',
-        nodeArgs: ['--debug'],
-        args: [7140, 7180]
-      }
-    },
-    typescript: {
-      base: {
-        src: ['src/**/*.ts'],
-        dest: '',
-        options: {
-          module: 'commonjs',
-          //          module: 'amd', //or commonjs
-          target: 'es5', //or es3
-          base_path: 'src',
-          sourcemap: true,
-          fullSourceMapPath: true
-          //          declaration: true
-        }
-      }
-    },
-    exec: {
-      tsd: {
-        cmd: function() {
-          var dependencies = [
-            'node', 'socket.io'
-          ];
-          return 'tsd install ' + dependencies.join(' ');
-        }
-      }
-    },
-    copy: {
-      deploy: {
-        files: [{
-          expand: true,
-          src: [
-            '**/*.js', 'package.json',
-            '!dist/**', '!node_modules/**', '!Gruntfile.js'
-          ],
-          dest: 'dist/',
-          filter: 'isFile'
-        }]
-      }
-    },
     sftp: {
       deploy: {
         files: {
-          "dist/": "dist/**"
+          "app/": "app/**"
         },
         options: {
           createDirectories: true,
-          srcBasePath: 'dist/',
+          srcBasePath: 'app/',
           host: '<%= secret.host %>',
           port: '<%= secret.port %>',
           username: '<%= secret.username %>',
@@ -74,12 +59,6 @@ module.exports = function(grunt) {
       }
     }
   });
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-develop');
-  grunt.loadNpmTasks('grunt-typescript');
-  grunt.loadNpmTasks('grunt-exec');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-ssh');
 
   grunt.registerTask('default', [
     'typescript',

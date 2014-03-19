@@ -1,0 +1,13 @@
+{
+  "name": "application-name",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node app"
+  },
+  "dependencies": {
+    "socket.io": "~0.9.16",
+    "log4js": "~0.6.12",
+    "iconv-lite": "~0.2.11"
+  }
+}

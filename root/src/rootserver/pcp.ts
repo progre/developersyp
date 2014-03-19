@@ -1,4 +1,4 @@
-var Iconv = require('iconv').Iconv;
+var Iconv = require('iconv-lite').Iconv;
 import putil = require('./../common/util');
 import GID = require('./gid');
 
