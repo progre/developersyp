@@ -19,7 +19,6 @@ module.exports = function(grunt) {
         dest: 'app/',
         options: {
           target: 'es5',
-          noResolve: true,
           basePath: 'src'
         }
       }

@@ -1,6 +1,6 @@
 {
-  "name": "application-name",
-  "version": "0.0.1",
+  "name": "Developer's_YP",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "node app"
