@@ -4,13 +4,12 @@ module.exports = function(grunt) {
   grunt.initConfig({
     secret: grunt.file.readJSON('secret.json'),
 
-    shell: {
-      tsd: {
-        command: function() {
-          var dependencies = [
-            'node', 'socket.io'
-          ];
-          return 'tsd install ' + dependencies.join(' ');
+    tsd: {
+      refresh: {
+        options: {
+          command: 'reinstall',
+          latest: true,
+          config: 'tsd.json'
         }
       }
     },
@@ -19,8 +18,8 @@ module.exports = function(grunt) {
         src: ['src/**/*.ts'],
         dest: 'app/',
         options: {
-          module: 'commonjs',
           target: 'es5',
+          noResolve: true,
           basePath: 'src'
         }
       }

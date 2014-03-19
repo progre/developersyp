@@ -9,15 +9,12 @@ import GID = require('./gid');
 import PcpServerSocket = require('./pcpserversocket');
 import hrl = require('./httprequestlistener');
 
-export interface NodeSocket2 extends net.NodeSocket, ReadableStream2 {
-}
-
 export class RootServer {
     private _sessionId = GID.generate();
     private channels: { [channelId: string]: ch.Channel; } = {};
     private pcp: net.Server;
     private http: http.Server;
-    private ws: SocketManager;
+    private ws: io.SocketManager;
     private webSocket = new hrl.WebSocket();
 
     constructor(private pcpPort: number, private httpPort: number) {
@@ -27,7 +24,7 @@ export class RootServer {
 
     listen() {
         var pcpLogger = log4js.getLogger('root-pcp');
-        this.pcp = net.createServer((client: NodeSocket2) =>
+        this.pcp = net.createServer((client: net.NodeSocket) =>
             new PcpServerSocket(this, client, pcpLogger)
             );
         this.pcp.on('error', e => {
