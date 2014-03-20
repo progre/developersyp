@@ -1,5 +1,7 @@
 module.exports = function(grunt) {
-  require('jit-grunt')(grunt);
+  require('jit-grunt')(grunt, {
+    sftp: 'grunt-ssh'
+  });
 
   grunt.initConfig({
     secret: grunt.file.readJSON('secret.json'),
@@ -42,7 +44,10 @@ module.exports = function(grunt) {
     sftp: {
       deploy: {
         files: {
-          "app/": "app/**"
+          'app/': [
+            'app/**',
+            '!app/log/**', '!app/node_modules/**'
+          ]
         },
         options: {
           createDirectories: true,
@@ -50,7 +55,7 @@ module.exports = function(grunt) {
           host: '<%= secret.host %>',
           port: '<%= secret.port %>',
           username: '<%= secret.username %>',
-          privateKey: grunt.file.read((process.env.HOME || process.env.USERPROFILE) + '/.ssh/id_rsa'),
+          privateKey: '<%= grunt.file.read(secret.privateKeyPath) %>',
           passphrase: '<%= secret.passphrase %>',
           path: '<%= secret.path %>'
         }
@@ -59,14 +64,17 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', [
-    'typescript',
+    'build',
     'develop',
     'watch'
   ]);
 
+  grunt.registerTask('build', [
+    'tsd',
+    'typescript'
+  ])
+
   grunt.registerTask('deploy', [
-    'typescript',
-    'copy',
     'sftp'
   ]);
 };
