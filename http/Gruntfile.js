@@ -4,30 +4,24 @@ module.exports = function(grunt) {
   var serverJs = ['src/server.ts', 'src/common/**/*.ts', 'src/http/**/*.ts'];
   var clientJs = ['src/public/**/*.ts'];
 
+  var jadeFiles = grunt.file.expandMapping(
+    ['src/public/**/*.jade'], 'app/public/', {
+      rename: function(destBase, destPath) {
+        return destBase + destPath.replace(/^src\/public\//, '').replace(/\.jade$/, ".html");
+      }
+    }
+  );
+
   grunt.initConfig({
     jade: {
       release: {
-        files: grunt.file.expandMapping(
-          ['src/public/**/*.jade'], 'public/', {
-            rename: function(destBase, destPath) {
-              return destBase + destPath.replace(/^src\/public\//, '').replace(/\.jade$/, ".html");
-            }
-          }
-        )
+        files: jadeFiles
       },
       debug: {
         options: {
-          data: {
-            debug: true
-          }
+          data: { debug: true }
         },
-        files: grunt.file.expandMapping(
-          ['src/public/**/*.jade'], 'public/', {
-            rename: function(destBase, destPath) {
-              return destBase + destPath.replace(/^src\/public\//, '').replace(/\.jade$/, ".html");
-            }
-          }
-        )
+        files: jadeFiles
       }
     },
     stylus: {
@@ -36,7 +30,7 @@ module.exports = function(grunt) {
           urlfunc: 'embedurl'
         },
         files: {
-          'public/stylesheets/style.css': 'src/public/stylesheets/style.styl'
+          'app/public/stylesheets/style.css': 'src/public/stylesheets/style.styl'
         }
       }
     },
@@ -52,17 +46,16 @@ module.exports = function(grunt) {
     typescript: {
       server: {
         src: serverJs,
-        dest: '',
+        dest: 'app/',
         options: {
           module: 'commonjs',
           target: 'es5',
-          basePath: 'src',
-          sourceMap: true
+          basePath: 'src'
         }
       },
       client: {
         src: clientJs,
-        dest: '',
+        dest: 'app/',
         options: {
           module: 'amd',
           target: 'es5',
@@ -73,7 +66,7 @@ module.exports = function(grunt) {
     },
     develop: {
       server: {
-        file: 'server.js',
+        file: 'app/server.js',
         nodeArgs: ['--debug'], // optional
         args: [8080]
       }
