@@ -1,4 +1,4 @@
-﻿/// <reference path="../../DefinitelyTyped/angularjs/angular.d.ts"/>
+﻿/// <reference path="../../typings/tsd.d.ts"/>
 import putil = require('./common/util');
 declare var io;
 

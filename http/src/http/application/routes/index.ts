@@ -1,5 +1,6 @@
 import http = require('http');
 import fs = require('fs');
+import express = require('express');
 var dateformat = require('dateformat');
 var clone = require('clone');
 import putil = require('./../../../common/util');
@@ -69,7 +70,7 @@ if (process.env.OPENSHIFT_APP_NAME != null) // プロダクトモードの判断
     var rootServerIndexRepository = new rootserver.RootServerIndexRepository();
 
 export var routings = {
-    '/index.txt': (req: ExpressServerRequest, res: ExpressServerResponse) => {
+    '/index.txt': (req: express.Request, res: express.Response) => {
         var channels = rootServerIndexRepository.getChannels();
         if (channels == null) {
             var maintenance = clone(getServerComment());

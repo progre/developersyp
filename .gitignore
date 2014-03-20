@@ -1,8 +1,16 @@
 node_modules/
+log/
 secret.json
+*.js
+*.map
+*.html
+*.css
 
 !Gruntfile.js
 
+typings/
+!typings/*.d.ts
+typings/tsd.d.ts
+
 http/src/common
 http/src/public/scripts/common
-root/app
