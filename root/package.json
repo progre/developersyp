@@ -11,7 +11,6 @@
     "iconv-lite": "~0.2.11"
   },
   "devDependencies": {
-    "grunt": "~0.4.4",
     "grunt-tsd": "0.0.4",
     "grunt-typescript": "~0.2.10",
     "grunt-develop": "~0.3.0",
