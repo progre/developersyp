@@ -112,9 +112,8 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           src: [
-            'public/**',
-            '**/*.js', 'package.json',
-            '!dist/**', '!node_modules/**', '!Gruntfile.js', '!**/*.map'
+            'app/public/**', 'app/**/*.js', 'package.json',
+            '!**/*.map'
           ],
           dest: 'dist/',
           filter: 'isFile'
@@ -136,11 +135,13 @@ module.exports = function(grunt) {
   grunt.registerTask('debug-build', [
     'jade:debug',
     'stylus',
+    'tsd',
     'typescript',
   ]);
   grunt.registerTask('release-build', [
     'jade:release',
     'stylus',
+    'tsd',
     'typescript',
   ]);
   grunt.registerTask('deploy', [

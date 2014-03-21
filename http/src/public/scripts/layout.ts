@@ -5,7 +5,7 @@ declare var io;
 var app = angular.module('app', ['ngRoute', 'ngCookies', 'ngAnimate']);
 app.config(['$locationProvider', '$routeProvider',
     ($locationProvider: ng.ILocationProvider,
-        $routeProvider: ng.IRouteProvider) => {
+        $routeProvider: ng.route.IRouteProvider) => {
         $locationProvider.html5Mode(true);
         $routeProvider
             .when('/', {
