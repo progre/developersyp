@@ -120,9 +120,9 @@ module.exports = function(grunt) {
         }]
       }
     },
-    shell: {
+    exec: {
       deploy: {
-        command: 'deploy.bat'
+        cmd: 'deploy.bat'
       }
     }
   });
@@ -147,6 +147,6 @@ module.exports = function(grunt) {
   grunt.registerTask('deploy', [
     'release-build',
     'copy',
-    'exec:deploy'
+    'exec'
   ]);
 };

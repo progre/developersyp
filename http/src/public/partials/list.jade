@@ -1,103 +1,104 @@
-style.
-  .animate.ng-enter div, .animate.ng-leave div, .animate.ng-move div {
-    -webkit-transition: all linear 0.25s;
-    -moz-transition: all linear 0.25s;
-    -ms-transition:all linear 0.25s;
-    -o-transition: all linear 0.25s;
-    transition: all linear 0.25s;
-  }
-  .animate.ng-enter div {
-    height: 0;
-  }
-  .animate.ng-enter.ng-enter-active div {
-    height: 60px;
-  }
-  .animate.ng-leave div {
-    height: 60px;
-  }
-  .animate.ng-leave.ng-leave-active div {
-    height: 0;
-  }
-  .animate div {
-    height: 60px;
-    overflow: hidden;
-  }
-.form-horizontal
-  .form-group
-    label.col-md-offset-1.col-md-1.control-label(for='port-input') ポート:
-    .col-md-2
-      input.form-control.input-sm(type='number', min='1', max='65535', value='7144', ng-model='port')
-    button.btn.btn-default.pull-right(ng-click='update()') 更新
-table.table
-  caption ライブ配信中
-  tr
-    th.col-sm-1
-    th.col-sm-8 Channel
-    th.col-sm-1(style='text-align: center') Status
-    th.col-sm-1(style='text-align: center') Type
-    th.col-sm-1(style='text-align: center') Share
-  tr(ng-show='channels == null')
-    td(colspan='5')
-      div(style='text-align: center')
-        i.icon-spinner.icon-spin.icon-4x
-  tr.animate(ng-show='channels != null && channels.length === 0')
-    td
-    td
-      div
-        |<br>
-        |配信中のチャンネルはありません<br>
-        a(href='info.html') チャンネルを掲載するには？
-    td
-    td
-    td
-  tr.animate(ng-repeat='channel in channels')
-    td(style='text-align: center')
-      div
+.container
+  style.
+    .animate.ng-enter div, .animate.ng-leave div, .animate.ng-move div {
+      -webkit-transition: all linear 0.25s;
+      -moz-transition: all linear 0.25s;
+      -ms-transition:all linear 0.25s;
+      -o-transition: all linear 0.25s;
+      transition: all linear 0.25s;
+    }
+    .animate.ng-enter div {
+      height: 0;
+    }
+    .animate.ng-enter.ng-enter-active div {
+      height: 60px;
+    }
+    .animate.ng-leave div {
+      height: 60px;
+    }
+    .animate.ng-leave.ng-leave-active div {
+      height: 0;
+    }
+    .animate div {
+      height: 60px;
+      overflow: hidden;
+    }
+  .form-horizontal
+    .form-group
+      label.col-md-offset-1.col-md-1.control-label(for='port-input') ポート:
+      .col-md-2
+        input.form-control.input-sm(type='number', min='1', max='65535', value='7144', ng-model='port')
+      button.btn.btn-default.pull-right(ng-click='update()') 更新
+  table.table
+    caption ライブ配信中
+    tr
+      th.col-sm-1
+      th.col-sm-8 Channel
+      th.col-sm-1(style='text-align: center') Status
+      th.col-sm-1(style='text-align: center') Type
+      th.col-sm-1(style='text-align: center') Share
+    tr(ng-show='channels == null')
+      td(colspan='5')
+        div(style='text-align: center')
+          i.icon-spinner.icon-spin.icon-4x
+    tr.animate(ng-show='channels != null && channels.length === 0')
+      td
+      td
+        div
+          |<br>
+          |配信中のチャンネルはありません<br>
+          a(href='info.html') チャンネルを掲載するには？
+      td
+      td
+      td
+    tr.animate(ng-repeat='channel in channels')
+      td(style='text-align: center')
+        div
+          br
+          a.play(href='http://localhost:{{port}}/pls/{{channel.id}}?tip={{channel.host.ip}}') Play
+          // img(width=64,height=64,src='https://si0.twimg.com/profile_images/2750510672/43dd290bc6b670c4622fb96f6fa309a7.png')
+      td
+        div
+          a(href='{{channel.info.url}}') {{channel.info.name}}<br>
+          |[{{channel.info.genre}}<span ng-show='channel.info.genre.length > 0 && channel.info.desc.length > 0'> - </span>{{channel.info.desc}}]<br>
+          span(ng-show='channel.info.comment.length > 0')
+            |「{{channel.info.comment}}」
+      td(style='text-align: center')
+        div
+          |{{channel.host.listeners}} / {{channel.host.relays}}<br>
+          <!--|(..) Stats<br> -->
+          |{{channel.time}}
+      td(style='text-align: center')
+        div
+          |{{channel.info.type}}<br>
+          |{{channel.info.bitrate}} kbps<!--<br>
+          |Free -->
+      td(style='text-align: center')
         br
-        a.play(href='http://localhost:{{port}}/pls/{{channel.id}}?tip={{channel.host.ip}}') Play
-        // img(width=64,height=64,src='https://si0.twimg.com/profile_images/2750510672/43dd290bc6b670c4622fb96f6fa309a7.png')
-    td
-      div
-        a(href='{{channel.info.url}}') {{channel.info.name}}<br>
-        |[{{channel.info.genre}}<span ng-show='channel.info.genre.length > 0 && channel.info.desc.length > 0'> - </span>{{channel.info.desc}}]<br>
-        span(ng-show='channel.info.comment.length > 0')
-          |「{{channel.info.comment}}」
-    td(style='text-align: center')
-      div
-        |{{channel.host.listeners}} / {{channel.host.relays}}<br>
-        <!--|(..) Stats<br> -->
-        |{{channel.time}}
-    td(style='text-align: center')
-      div
-        |{{channel.info.type}}<br>
-        |{{channel.info.bitrate}} kbps<!--<br>
-        |Free -->
-    td(style='text-align: center')
-      br
-      iframe(
-        allowtransparency='true', frameborder='0', scrolling='no',
-        style='width:68px; height:20px;',
-        ng-src='{{channel.tweetUrl}}')
-table.table(style='margin-top: 80px; color: #aaa')
-  caption 最近の配信
-  tr
-    th.col-sm-1
-    th.col-sm-8 Channel
-    th.col-sm-3(style='text-align: center') Period
-  tr(ng-show='doneChannels == null')
-    td(colspan='4')
-      div(style='text-align: center')
-        i.icon-spinner.icon-spin.icon-4x
-  tr.animate(ng-repeat='dc in doneChannels')
-    td
-    td
-      div
-        a(href='{{dc.channel.info.url}}') {{dc.channel.info.name}}<br>
-        |[{{dc.channel.info.parsedGenre}}<span ng-show='dc.channel.info.parsedGenre.length > 0 && dc.channel.info.desc.length > 0'> - </span>{{dc.channel.info.desc}}]<br>
-        span(ng-show='dc.channel.info.comment.length > 0')
-          |「{{dc.channel.info.comment}}」
-    td(style='text-align: center')
-      div
-        |{{dc['endText']}}<br>
-        |≀<br>
-        |{{dc['beginText']}}
+        iframe(
+          allowtransparency='true', frameborder='0', scrolling='no',
+          style='width:68px; height:20px;',
+          ng-src='{{channel.tweetUrl}}')
+  table.table(style='margin-top: 80px; color: #aaa')
+    caption 最近の配信
+    tr
+      th.col-sm-1
+      th.col-sm-8 Channel
+      th.col-sm-3(style='text-align: center') Period
+    tr(ng-show='doneChannels == null')
+      td(colspan='4')
+        div(style='text-align: center')
+          i.icon-spinner.icon-spin.icon-4x
+    tr.animate(ng-repeat='dc in doneChannels')
+      td
+      td
+        div
+          a(href='{{dc.channel.info.url}}') {{dc.channel.info.name}}<br>
+          |[{{dc.channel.info.parsedGenre}}<span ng-show='dc.channel.info.parsedGenre.length > 0 && dc.channel.info.desc.length > 0'> - </span>{{dc.channel.info.desc}}]<br>
+          span(ng-show='dc.channel.info.comment.length > 0')
+            |「{{dc.channel.info.comment}}」
+      td(style='text-align: center')
+        div
+          |{{dc['endText']}}<br>
+          |≀<br>
+          |{{dc['beginText']}}
