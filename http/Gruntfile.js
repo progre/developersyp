@@ -122,7 +122,12 @@ module.exports = function(grunt) {
     },
     exec: {
       deploy: {
-        cmd: 'deploy.bat'
+        cwd: 'dist/',
+        cmd: [
+          'git add -A',
+          'git commit -a -m "update"',
+          'git push'
+        ].join('&&')
       }
     }
   });
