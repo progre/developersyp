@@ -83,7 +83,7 @@ module.exports = function(grunt) {
   ])
 
   grunt.registerTask('release-build', [
-    'tsd:build',
+    'tsd:refresh',
     'typescript'
   ])
 
