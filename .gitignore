@@ -9,9 +9,8 @@ secret.json
 
 !Gruntfile.js
 
-typings/
-!typings/*.d.ts
-typings/tsd.d.ts
+**/typings/*/**/*.d.ts
+**/typings/tsd.d.ts
 
 http/src/common
 http/src/public/scripts/common
