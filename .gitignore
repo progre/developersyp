@@ -1,14 +1,17 @@
 node_modules/
+log/
 dist/
-public/components
-http/src/common
-http/src/public/scripts/common
-.sass-cache
-*.map
-*.js
-*.css
-*.log*
-*.html
 secret.json
+*.js
+*.map
+*.html
+*.css
 
 !Gruntfile.js
+
+typings/
+!typings/*.d.ts
+typings/tsd.d.ts
+
+http/src/common
+http/src/public/scripts/common

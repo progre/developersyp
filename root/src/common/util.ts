@@ -69,3 +69,10 @@ export function bind<TSender, TResult>(obj: TSender, func: (sender: TSender) => 
         return null;
     return func(obj);
 }
+
+export function secondsToHoursMinutes(sec: number) {
+    var minutes = sec / 60 | 0;
+    var h = minutes / 60 | 0;
+    var m = minutes - h * 60 | 0;
+    return h + ':' + padLeft("" + m, 2, '0');
+}

@@ -12,7 +12,7 @@ export class PcpReader {
     /** ヘッダーから読み進める
         ヘッダーの読み込み失敗時に先頭4バイトのバッファーを投げる
      */
-    read(readable: ReadableStream2): pcp.Atom {
+    read(readable: ReadableStream): pcp.Atom {
         // ヘッダーのバリデーション
         if (putil.isEmpty(this.header.name)) {
             var buffer = readable.read(4);
@@ -57,7 +57,7 @@ export class AtomReader {
     private content: NodeBuffer;
     private childCache: AtomReader;
 
-    read(stream: ReadableStream2): pcp.Atom {
+    read(stream: ReadableStream): pcp.Atom {
         if (this.name == null) {
             var buffer = stream.read(8);
             if (buffer == null)
@@ -80,7 +80,7 @@ export class AtomReader {
         return new pcp.Atom(this.name, this.children, this.content);
     }
 
-    private readChildren(stream: ReadableStream2, numChildren: number): boolean {
+    private readChildren(stream: ReadableStream, numChildren: number): boolean {
         for (var i = this.children.length; i < numChildren; i++) {
             if (this.childCache == null) {
                 this.childCache = new AtomReader();

@@ -1,5 +1,6 @@
 import http = require('http');
 import fs = require('fs');
+import express = require('express');
 var dateformat = require('dateformat');
 var clone = require('clone');
 import putil = require('./../../../common/util');
@@ -65,11 +66,10 @@ function uptimeToString(uptime: number) {
 }
 
 // このへんの処理はクラスにすべき
-if (process.env.OPENSHIFT_APP_NAME != null) // プロダクトモードの判断が微妙
-    var rootServerIndexRepository = new rootserver.RootServerIndexRepository();
+export var rootServerIndexRepository: rootserver.RootServerIndexRepository = null;
 
 export var routings = {
-    '/index.txt': (req: ExpressServerRequest, res: ExpressServerResponse) => {
+    '/index.txt': (req: express.Request, res: express.Response) => {
         var channels = rootServerIndexRepository.getChannels();
         if (channels == null) {
             var maintenance = clone(getServerComment());
@@ -128,7 +128,7 @@ function format(date: Date) {
     return dateformat(toJST(new Date(date.getTime())), 'UTC:m/dd HH:MM');
 }
 
-function toJST(date:Date) {
+function toJST(date: Date) {
     date.setHours(date.getHours() + 9);// UTC+9
     return date
 }

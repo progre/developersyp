@@ -1,14 +1,74 @@
 module.exports = function(grunt) {
+  require('jit-grunt')(grunt);
+
   var serverJs = ['src/server.ts', 'src/common/**/*.ts', 'src/http/**/*.ts'];
   var clientJs = ['src/public/**/*.ts'];
 
+  var jadeFiles = grunt.file.expandMapping(
+    ['src/public/**/*.jade'], 'app/public/', {
+      rename: function(destBase, destPath) {
+        return destBase + destPath.replace(/^src\/public\//, '').replace(/\.jade$/, ".html");
+      }
+    }
+  );
+
   grunt.initConfig({
-    pkg: grunt.file.readJSON('package.json'),
+    jade: {
+      release: {
+        files: jadeFiles
+      },
+      debug: {
+        options: {
+          data: { debug: true }
+        },
+        files: jadeFiles
+      }
+    },
+    stylus: {
+      compile: {
+        options: {
+          urlfunc: 'embedurl'
+        },
+        files: {
+          'app/public/stylesheets/style.css': 'src/public/stylesheets/style.styl'
+        }
+      }
+    },
+    tsd: {
+      refresh: {
+        options: {
+          command: 'reinstall',
+          latest: true,
+          config: 'tsd.json'
+        }
+      }
+    },
+    typescript: {
+      server: {
+        src: serverJs,
+        dest: 'app/',
+        options: {
+          module: 'commonjs',
+          target: 'es5',
+          basePath: 'src',
+          sourceMap: true
+        }
+      },
+      client: {
+        src: clientJs,
+        dest: 'app/',
+        options: {
+          module: 'amd',
+          target: 'es5',
+          basePath: 'src',
+          sourceMap: true
+        }
+      }
+    },
     develop: {
       server: {
-        file: 'server.js',
-        nodeArgs: ['--debug'], // optional
-        args: [8080]
+        file: 'app/server.js',
+        nodeArgs: ['--debug']
       }
     },
     watch: {
@@ -47,128 +107,51 @@ module.exports = function(grunt) {
         }
       }
     },
-    jade: {
-      release: {
-        files: grunt.file.expandMapping(
-          ['src/public/**/*.jade'], 'public/', {
-            rename: function(destBase, destPath) {
-              return destBase + destPath.replace(/^src\/public\//, '').replace(/\.jade$/, ".html");
-            }
-          }
-        )
-      },
-      debug: {
-        options: {
-          data: {
-            debug: true
-          }
-        },
-        files: grunt.file.expandMapping(
-          ['src/public/**/*.jade'], 'public/', {
-            rename: function(destBase, destPath) {
-              return destBase + destPath.replace(/^src\/public\//, '').replace(/\.jade$/, ".html");
-            }
-          }
-        )
-      }
-    },
-    stylus: {
-      compile: {
-        options: {
-          urlfunc: 'embedurl'
-        },
-        files: {
-          'public/stylesheets/style.css': 'src/public/stylesheets/style.styl'
-        }
-      }
-    },
-    typescript: {
-      server: {
-        src: serverJs,
-        dest: '',
-        options: {
-          module: 'commonjs', //          module: 'amd', //or commonjs
-          target: 'es5', //or es3
-          base_path: 'src',
-          sourcemap: true,
-          fullSourceMapPath: true
-          //          declaration: true
-        }
-      },
-      client: {
-        src: clientJs,
-        dest: '',
-        options: {
-          module: 'amd', //          module: 'amd', //or commonjs
-          target: 'es5', //or es3
-          base_path: 'src',
-          sourcemap: true,
-          fullSourceMapPath: true
-          //          declaration: true
-        }
-      }
-    },
-    exec: {
-      tsd: {
-        cmd: function() {
-          var dependencies = [
-            'express', 'node', 'angular', 'jquery', 'requirejs', 'socket.io'
-          ];
-          return 'tsd install ' + dependencies.join(' ');
-        }
-      },
-      deploy: {
-        cmd: 'deploy.bat'
-      }
-    },
     copy: {
       deploy: {
         files: [{
           expand: true,
           src: [
-            'public/**',
-            '**/*.js', 'package.json',
-            '!dist/**', '!node_modules/**', '!Gruntfile.js', '!**/*.map'
+            'app/public/**', 'app/**/*.js', 'package.json',
+            '!**/*.map'
           ],
           dest: 'dist/',
           filter: 'isFile'
         }]
       }
+    },
+    exec: {
+      deploy: {
+        cwd: 'dist/',
+        cmd: [
+          'git add -A',
+          'git commit -a -m "update"',
+          'git push'
+        ].join('&&')
+      }
     }
   });
-  grunt.registerTask('delayed-livereload', 'delayed livereload', function() {
-    var done = this.async();
-    setTimeout(function() {
-      grunt.task.run('livereload');
-      done();
-    }, 500);
-  });
-  grunt.loadNpmTasks('grunt-develop');
-  grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.loadNpmTasks('grunt-contrib-stylus');
-  grunt.loadNpmTasks('grunt-typescript');
-  grunt.loadNpmTasks('grunt-exec');
-  grunt.loadNpmTasks('grunt-contrib-copy');
-  grunt.loadNpmTasks('grunt-contrib-jade');
 
   grunt.registerTask('default', [
     'debug-build',
     'develop',
     'watch'
   ]);
-  grunt.registerTask('deploy', [
-    'release-build',
-    'copy',
-    'exec:deploy'
-  ]);
   grunt.registerTask('debug-build', [
     'jade:debug',
     'stylus',
+    'tsd',
     'typescript',
   ]);
   grunt.registerTask('release-build', [
     'jade:release',
     'stylus',
+    'tsd',
     'typescript',
+  ]);
+  grunt.registerTask('deploy', [
+    'release-build',
+    'copy',
+    'exec'
   ]);
 };

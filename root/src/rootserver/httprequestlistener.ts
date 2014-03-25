@@ -49,7 +49,7 @@ export class WebSocket {
     private socket: any;
 
     onConnection(socket: any, channels: Channels) {
-        var wsLogger = log4js.getLogger('root-ws');
+        var wsLogger = log4js.getLogger('root-http');
         var address = socket.handshake.address;
         wsLogger.info('ws-server was connected from ' + address.address + ':' + address.port);
         this.socket = socket;

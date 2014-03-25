@@ -19,7 +19,7 @@ class PcpServerSocket {
         /** サーバー */
         private server: root.RootServer,
         /** 接続中のクライアント */
-        private client: root.NodeSocket2,
+        private client: net.NodeSocket,
         /** ログ */
         private logger: log4js.Logger
         ) {

@@ -1,0 +1,24 @@
+{
+  "name": "Developer's_YP",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node app/server"
+  },
+  "dependencies": {
+    "source-map-support": "~0.2.5",
+    "socket.io": "~0.9.16",
+    "log4js": "~0.6.12",
+    "jconv": "~0.1.5"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-tsd": "0.0.4",
+    "grunt-typescript": "~0.2.10",
+    "grunt-develop": "~0.3.0",
+    "grunt-contrib-watch": "~0.6.0",
+    "grunt-ssh": "~0.11.0",
+    "jit-grunt": "~0.3.2",
+    "tsd": "~0.5.6"
+  }
+}

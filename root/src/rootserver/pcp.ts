@@ -1,4 +1,4 @@
-var Iconv = require('iconv').Iconv;
+var jconv = require('jconv');
 import putil = require('./../common/util');
 import GID = require('./gid');
 
@@ -153,7 +153,7 @@ export class Atom {
                 if (!isUTF8Valid(sliced)) {
                     var str = fromShiftJIS(sliced);
                     if (str != null)
-                        return str;
+                        return str.toString('utf-8');
                 }
                 return sliced.toString('utf-8');
             case 'bytes':
@@ -354,8 +354,8 @@ function isUTF8Valid(content: NodeBuffer) {
     return equals(content, new Buffer(content.toString('utf-8'), 'utf-8'));
 }
 function fromShiftJIS(content: NodeBuffer) {
-    var str = new Iconv('CP932', 'UTF-8').convert(content).toString();
-    var buf: NodeBuffer = new Iconv('UTF-8', 'CP932').convert(str);
+    var str: NodeBuffer = jconv.convert(content, 'CP932', 'UTF-8');
+    var buf: NodeBuffer = jconv.convert(str, 'UTF-8', 'CP932');
     if (!equals(content, buf))
         return null;
     return str;

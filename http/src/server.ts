@@ -1,13 +1,12 @@
-/// <reference path="DefinitelyTyped/node/node.d.ts"/>
-/// <reference path="DefinitelyTyped/express/express.d.ts"/>
-/// <reference path="DefinitelyTyped/socket.io/socket.io.d.ts"/>
+/// <reference path="typings/tsd.d.ts"/>
 
+require('source-map-support').install();
 import fs = require('fs');
 import path = require('path');
 var log4js = require('log4js');
 import server = require('./http/application/server');
 
-var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/log'
+var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/../log'
 try {
     fs.mkdirSync(LOG_DIRECTORY, '777');
 } catch (e) {
@@ -18,15 +17,33 @@ log4js.configure({
         category: 'app',
         type: 'file',
         filename: LOG_DIRECTORY + '/http.log',
-        maxLogSize: 50 * MEGA,
+        maxLogSize: 40 * MEGA,
         backups: 3
     }]
 });
 
-var ipaddress = process.env.OPENSHIFT_INTERNAL_IP || process.env.OPENSHIFT_NODEJS_IP || 'localhost';
-var port = parseInt(process.argv[2], 10);
-if (isNaN(port)) {
-    port = process.env.OPENSHIFT_INTERNAL_PORT || process.env.OPENSHIFT_NODEJS_PORT || 80;
-}
+var local = parseIpAddress(process.argv[2]);
+var localIp = local.ip || '0.0.0.0';
+var localPort = local.port || 8080;
 
-server(ipaddress, port, __dirname + '/public');
+var root = parseIpAddress(process.argv[3])
+var rootIp = root.ip || '127.0.0.1';
+var rootPort = root.port || 7180;
+var dbAddress = process.argv[4] || '127.0.0.1:27017/dp';
+
+server(localIp, localPort, rootIp, rootPort, dbAddress, __dirname + '/public');
+
+function parseIpAddress(arg: string) {
+    if (arg == null)
+        return { ip: null, port: null };
+
+    var array = arg.split(':');
+    if (array.length === 2) {
+        return { ip: array[0], port: parseInt(array[1], 10) };
+    }
+    var port = parseInt(arg, 10);
+    if (port != null) {
+        return { ip: null, port: port };
+    }
+    return { ip: arg, port: null };
+}

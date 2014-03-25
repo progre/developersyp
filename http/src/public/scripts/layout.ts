@@ -1,11 +1,12 @@
-﻿/// <reference path="../../DefinitelyTyped/angularjs/angular.d.ts"/>
+﻿/// <reference path="../../typings/tsd.d.ts"/>
 import putil = require('./common/util');
+import env = require('./env');
 declare var io;
 
 var app = angular.module('app', ['ngRoute', 'ngCookies', 'ngAnimate']);
 app.config(['$locationProvider', '$routeProvider',
     ($locationProvider: ng.ILocationProvider,
-        $routeProvider: ng.IRouteProvider) => {
+        $routeProvider: ng.route.IRouteProvider) => {
         $locationProvider.html5Mode(true);
         $routeProvider
             .when('/', {
@@ -27,7 +28,7 @@ app.controller('ApplicationController', ['$scope', '$location',
     }]);
 app.controller('ListController', ['$scope', '$location', '$http', '$cookieStore', '$sce',
     ($scope, $location, $http: ng.IHttpService, $cookieStore, $sce: any) => {
-        var socket = io.connect('ws://dp.prgrssv.net:8000/');
+        var socket = io.connect('ws://' + env.serverIp + ':' + env.serverPort + '/');
         socket.emit('get', ['/channels', '/done-channels']);
         socket.on('post', data => {
             for (var key in data) switch (key) {
