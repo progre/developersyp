@@ -3,6 +3,7 @@ node_js:
   - "0.10"
 before_install:
   - npm install -g grunt-cli
+  - chmod +x init.sh
   - ./init.sh
 install:
   - cd root && npm install ; cd..
