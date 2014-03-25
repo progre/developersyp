@@ -36,6 +36,10 @@ export module doneChannels {
     export function add(channel: ch.DoneChannel) {
         var logger = log4js.getLogger('app');
         connect((err, db) => {
+            if (err != null) {
+                logger.error(err);
+                return;
+            }
             db.collection('doneChannels', (err, collection) => {
                 var old = new Date();
                 old.setDate(old.getDate() - 15);

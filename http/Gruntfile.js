@@ -51,6 +51,7 @@ module.exports = function(grunt) {
           module: 'commonjs',
           target: 'es5',
           basePath: 'src'
+          sourceMap: true
         }
       },
       client: {
