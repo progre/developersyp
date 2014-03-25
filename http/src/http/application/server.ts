@@ -5,11 +5,14 @@ import io = require('socket.io');
 var log4js = require('log4js');
 import routes = require('./routes/index');
 import ch = require('./../domain/entity/channel');
+import rootserver = require('./../infrastructure/rootserver');
 
 export = execute;
-function execute(ipaddress: string, port: number, publicPath: string) {
+function execute(ipaddress: string, port: number, rootIp:string, rootPort: number, publicPath: string) {
     var logger = log4js.getLogger('app');
     var app = express();
+
+    routes.rootServerIndexRepository = new rootserver.RootServerIndexRepository(rootIp, rootPort);
 
     app.configure(() => {
         app.use((req, res, next) => {
@@ -51,7 +54,7 @@ function execute(ipaddress: string, port: number, publicPath: string) {
     });
 
     server.listen(port, ipaddress, null, function () {
-        console.log("Express server listening on port " + port);
+        logger.info("Express server listening on port " + port);
     });
 }
 

@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node app/app"
+    "start": "node app/server"
   },
   "dependencies": {
     "source-map-support": "~0.2.5",

@@ -4,7 +4,9 @@ module.exports = function(grunt) {
   });
 
   grunt.initConfig({
-    secret: grunt.file.readJSON('secret.json'),
+    secret: grunt.file.exists('secret.json')
+      ? grunt.file.readJSON('secret.json')
+      : null,
 
     tsd: {
       refresh: {
@@ -29,8 +31,7 @@ module.exports = function(grunt) {
     develop: {
       server: {
         file: 'app/app.js',
-        nodeArgs: ['--debug'],
-        args: [7140, 7180]
+        nodeArgs: ['--debug']
       }
     },
     watch: {

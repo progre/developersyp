@@ -1,5 +1,5 @@
-/// <reference path='typings/tsd.d.ts'/>
-/// <reference path='typings/log4js.d.ts'/>
+/// <reference path="typings/tsd.d.ts"/>
+/// <reference path="typings/log4js.d.ts"/>
 
 require('source-map-support').install();
 import fs = require('fs');
@@ -9,12 +9,12 @@ import root = require('./rootserver/rootserver');
 
 var pcpPort = parseInt(process.argv[2], 10);
 if (isNaN(pcpPort))
-    pcpPort = 7144;
+    pcpPort = 7146;
 var httpPort = parseInt(process.argv[3], 10);
 if (isNaN(httpPort))
     httpPort = 7180;
 
-var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/log';
+var LOG_DIRECTORY = path.dirname(process.argv[1]) + '/../log';
 if (!fs.existsSync(LOG_DIRECTORY)) {
     fs.mkdirSync(LOG_DIRECTORY, '777');
 }
@@ -30,12 +30,6 @@ log4js.configure({
             category: 'root-http',
             type: 'dateFile',
             filename: LOG_DIRECTORY + '/root-http.log',
-            pattern: '-yyyy-MM-dd'
-        },
-        {
-            category: 'root-ws',
-            type: 'dateFile',
-            filename: LOG_DIRECTORY + '/root-ws.log',
             pattern: '-yyyy-MM-dd'
         }]
 });

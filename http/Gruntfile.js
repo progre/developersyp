@@ -67,8 +67,7 @@ module.exports = function(grunt) {
     develop: {
       server: {
         file: 'app/server.js',
-        nodeArgs: ['--debug'], // optional
-        args: [8080]
+        nodeArgs: ['--debug']
       }
     },
     watch: {

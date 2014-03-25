@@ -66,8 +66,7 @@ function uptimeToString(uptime: number) {
 }
 
 // このへんの処理はクラスにすべき
-if (process.env.OPENSHIFT_APP_NAME != null) // プロダクトモードの判断が微妙
-    var rootServerIndexRepository = new rootserver.RootServerIndexRepository();
+export var rootServerIndexRepository: rootserver.RootServerIndexRepository = null;
 
 export var routings = {
     '/index.txt': (req: express.Request, res: express.Response) => {
@@ -129,7 +128,7 @@ function format(date: Date) {
     return dateformat(toJST(new Date(date.getTime())), 'UTC:m/dd HH:MM');
 }
 
-function toJST(date:Date) {
+function toJST(date: Date) {
     date.setHours(date.getHours() + 9);// UTC+9
     return date
 }

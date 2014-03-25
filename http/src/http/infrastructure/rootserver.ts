@@ -13,7 +13,7 @@ export class RootServerIndexRepository {
     private channels: ch.Channel[] = [];
     private connected = false;
 
-    constructor() {
+    constructor(private ip: string, private port: number) {
         this.connect();
     }
 
@@ -36,7 +36,7 @@ export class RootServerIndexRepository {
         this.channels = [];
         var logger = log4js.getLogger('app');
         logger.info('connecting...');
-        var server = socketIoClient.connect(ROOT_SERVER, {
+        var server = socketIoClient.connect('ws://' + this.ip + ':' + this.port, {
             'force new connection': true
         });
         this.connected = false;
