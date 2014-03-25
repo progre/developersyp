@@ -9,5 +9,5 @@ install:
   - cd root && npm install ; cd ..
   - cd http && npm install ; cd ..
 script:
-  - cd root && grunt build ; cd ..
+  - cd root && grunt release-build ; cd ..
   - cd http && grunt release-build ; cd ..

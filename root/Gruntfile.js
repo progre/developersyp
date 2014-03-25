@@ -10,11 +10,17 @@ module.exports = function(grunt) {
       : null,
 
     tsd: {
+      build: {
+        options: {
+          command: 'reinstall',
+          config: 'tsd.json'
+        }
+      },
       refresh: {
         options: {
           command: 'reinstall',
-          latest: true,
-          config: 'tsd.json'
+          config: 'tsd.json',
+          latest: true
         }
       }
     },
@@ -66,18 +72,23 @@ module.exports = function(grunt) {
   });
 
   grunt.registerTask('default', [
-    'build',
+    'debug-build',
     'develop',
     'watch'
   ]);
 
-  grunt.registerTask('build', [
-    'tsd',
+  grunt.registerTask('debug-build', [
+    'tsd:refresh',
+    'typescript'
+  ])
+
+  grunt.registerTask('release-build', [
+    'tsd:build',
     'typescript'
   ])
 
   grunt.registerTask('deploy', [
-    'build',
+    'release-build',
     'sftp'
   ]);
 };

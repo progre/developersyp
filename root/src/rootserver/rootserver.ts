@@ -24,7 +24,7 @@ export class RootServer {
 
     listen() {
         var pcpLogger = log4js.getLogger('root-pcp');
-        this.pcp = net.createServer((client: net.NodeSocket) =>
+        this.pcp = net.createServer((client: net.Socket) =>
             new PcpServerSocket(this, client, pcpLogger)
             );
         this.pcp.on('error', e => {

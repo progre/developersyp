@@ -19,7 +19,7 @@ class PcpServerSocket {
         /** サーバー */
         private server: root.RootServer,
         /** 接続中のクライアント */
-        private client: net.NodeSocket,
+        private client: net.Socket,
         /** ログ */
         private logger: log4js.Logger
         ) {
@@ -115,7 +115,7 @@ class PcpServerSocket {
         sessionId: GID, host: string, pingPort: number,
         callback: (port: number) => void) {
 
-        var subSocket: net.NodeSocket = <any>net.connect(pingPort, host, () => {
+        var subSocket: net.Socket = <any>net.connect(pingPort, host, () => {
             var content = new Buffer(4);
             content.writeUInt32LE(1, 0);
             new pcp.Atom('pcp\n', null, content).writeTo(subSocket);
