@@ -23,7 +23,7 @@ export class RootServer {
     get sessionId() { return this._sessionId; }
 
     listen() {
-        var pcpLogger = log4js.getLogger('root-pcp');
+        var pcpLogger = log4js.getLogger('pcp');
         this.pcp = net.createServer((client: net.Socket) =>
             new PcpServerSocket(this, client, pcpLogger)
             );
@@ -37,7 +37,7 @@ export class RootServer {
             pcpLogger.info('pcp-server bound. port: ' + this.pcpPort);
         });
 
-        var httpLogger = log4js.getLogger('root-http');
+        var httpLogger = log4js.getLogger('http');
         this.http = http.createServer((req, res) =>
             hrl.httpRequestListener(req, res, this.channels, httpLogger)
             );

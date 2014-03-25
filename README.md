@@ -17,8 +17,8 @@ How to build & run
 ----
 
 1. run `> init.bat` (Windows) or `$ ./init.sh` (Mac, Linux)
-2. run `> npm install` on root/
-3. run `> grunt` on root/
+2. run `> npm install` on pcp/
+3. run `> grunt` on pcp/
 4. open other console, and run `> npm install` on http/
 5. run `> grunt` on http/
 
@@ -26,7 +26,7 @@ How to build & run
 サーバー構成
 ----
 
-### root server
+### pcp server
 
 PeerCastと通信を行うサーバーです。
 
@@ -45,9 +45,9 @@ http serverの配信履歴を保存する為に必要です。
 起動オプション
 ----
 
-### root server
+### pcp server
 
-rootディレクトリで実行します。
+pcpディレクトリで実行します。
 ```bat
 > node app/server [pcp-port] [http-port]
 ```
@@ -60,11 +60,11 @@ rootディレクトリで実行します。
 
 httpディレクトリで実行します。
 ```bat
-> node app/server [local-ip] [root-ip] [mongodb-ip]
+> node app/server [local-ip] [pcp-ip] [mongodb-ip]
 ```
 
 * local-ip: Webブラウザ、pcypツールからの通信を待ち受ける「IPアドレス:TCPポート番号」 (default: 0.0.0.0:8080)
-* root-ip: rootサーバーの「IPアドレス:ポート番号」 (default: 127.0.0.1:7180)
+* pcp-ip: pcpサーバーの「IPアドレス:ポート番号」 (default: 127.0.0.1:7180)
 * mongodb-ip: mongodbの「ユーザー:パスワード@IP:ポート番号/db名」 (default: 127.0.0.1:27017)
 
 

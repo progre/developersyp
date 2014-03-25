@@ -49,7 +49,7 @@ export class WebSocket {
     private socket: any;
 
     onConnection(socket: any, channels: Channels) {
-        var wsLogger = log4js.getLogger('root-http');
+        var wsLogger = log4js.getLogger('http');
         var address = socket.handshake.address;
         wsLogger.info('ws-server was connected from ' + address.address + ':' + address.port);
         this.socket = socket;
@@ -87,7 +87,7 @@ function toSlims(channels: Channels) {
 }
 
 function slim(channel: ch.Channel) {
-    var logger = log4js.getLogger('root-http');
+    var logger = log4js.getLogger('http');
     if (channel == null) {
         logger.fatal('null in channels');
         return null;

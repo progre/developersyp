@@ -21,15 +21,15 @@ if (!fs.existsSync(LOG_DIRECTORY)) {
 log4js.configure({
     appenders: [
         {
-            category: 'root-pcp',
+            category: 'pcp',
             type: 'dateFile',
-            filename: LOG_DIRECTORY + '/root-pcp.log',
+            filename: LOG_DIRECTORY + '/pcp.log',
             pattern: '-yyyy-MM-dd'
         },
         {
-            category: 'root-http',
+            category: 'http',
             type: 'dateFile',
-            filename: LOG_DIRECTORY + '/root-http.log',
+            filename: LOG_DIRECTORY + '/http.log',
             pattern: '-yyyy-MM-dd'
         }]
 });

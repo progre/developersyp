@@ -6,8 +6,8 @@ before_install:
   - chmod +x init.sh
   - ./init.sh
 install:
-  - cd root && npm install ; cd ..
+  - cd pcp && npm install ; cd ..
   - cd http && npm install ; cd ..
 script:
-  - cd root && grunt release-build ; cd ..
+  - cd pcp && grunt release-build ; cd ..
   - cd http && grunt release-build ; cd ..
