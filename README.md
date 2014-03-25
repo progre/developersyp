@@ -1,6 +1,8 @@
 Developer's YP
 ============
 
+[![Build Status](https://travis-ci.org/progre/developersyp.svg?branch=master)](https://travis-ci.org/progre/developersyp)
+
 http://dp.prgrssv.net
 
 
