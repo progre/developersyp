@@ -17,7 +17,7 @@ log4js.configure({
         category: 'app',
         type: 'file',
         filename: LOG_DIRECTORY + '/http.log',
-        maxLogSize: 50 * MEGA,
+        maxLogSize: 40 * MEGA,
         backups: 3
     }]
 });
@@ -29,7 +29,7 @@ var localPort = local.port || 8080;
 var root = parseIpAddress(process.argv[3])
 var rootIp = root.ip || '127.0.0.1';
 var rootPort = root.port || 7180;
-var dbAddress = process.argv[3] || '127.0.0.1:27017/dp';
+var dbAddress = process.argv[4] || '127.0.0.1:27017/dp';
 
 server(localIp, localPort, rootIp, rootPort, dbAddress, __dirname + '/public');
 
