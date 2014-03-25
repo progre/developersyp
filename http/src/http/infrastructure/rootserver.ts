@@ -5,8 +5,6 @@ var socketIoClient = require('socket.io-client');
 import ch = require('./../domain/entity/channel');
 import db = require('./../infrastructure/database');
 
-var ROOT_SERVER = 'ws://root-dp.prgrssv.net:7180';
-
 /** ƒVƒXƒeƒ€‚Å1Ú‘± */
 export class RootServerIndexRepository {
     private connectionStartedAt: Date;

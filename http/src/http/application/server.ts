@@ -6,13 +6,15 @@ var log4js = require('log4js');
 import routes = require('./routes/index');
 import ch = require('./../domain/entity/channel');
 import rootserver = require('./../infrastructure/rootserver');
+import db = require('./../infrastructure/database');
 
 export = execute;
-function execute(ipaddress: string, port: number, rootIp:string, rootPort: number, publicPath: string) {
+function execute(ipaddress: string, port: number, rootIp:string, rootPort: number, dbAddress:string, publicPath: string) {
     var logger = log4js.getLogger('app');
     var app = express();
 
     routes.rootServerIndexRepository = new rootserver.RootServerIndexRepository(rootIp, rootPort);
+    db.address = dbAddress;
 
     app.configure(() => {
         app.use((req, res, next) => {

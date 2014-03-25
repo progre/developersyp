@@ -2,6 +2,8 @@ var MongoClient = require('mongodb').MongoClient;
 import ch = require('./../domain/entity/channel');
 var log4js = require('log4js');
 
+export var address: string = '';
+
 export module doneChannels {
     export function toArray(
         callback: (doneChannels: ch.DoneChannel[]) => void ): void {
@@ -71,12 +73,5 @@ export module doneChannels {
 };
 
 function connect(callback: (err, db) => void ) {
-    MongoClient.connect('mongodb://'
-        + (process.env.OPENSHIFT_MONGODB_DB_USERNAME != null
-        ? process.env.OPENSHIFT_MONGODB_DB_USERNAME + ':'
-        + process.env.OPENSHIFT_MONGODB_DB_PASSWORD + '@'
-        : '')
-        + (process.env.OPENSHIFT_MONGODB_DB_HOST || 'localhost') + ':'
-        + (process.env.OPENSHIFT_MONGODB_DB_PORT || '27017') + '/'
-        + 'dp', callback);
+    MongoClient.connect('mongodb://' + address, callback);
 }
