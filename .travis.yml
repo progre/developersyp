@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+  - "0.10"
+before_install:
+  - npm install -g grunt-cli
+  - ./init.sh
+install:
+  - cd root && npm install ; cd..
+  - cd http && npm install ; cd..
+script:
+  - cd root && grunt build ; cd..
+  - cd http && grunt release-build ; cd..
