@@ -18,7 +18,7 @@ log4js.configure({
         type: 'file',
         filename: LOG_DIRECTORY + '/http.log',
         maxLogSize: 40 * MEGA,
-        backups: 3
+        backups: 2
     }]
 });
 
