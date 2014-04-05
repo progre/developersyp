@@ -6,10 +6,10 @@
   "bundle": "src/typings/tsd.d.ts",
   "installed": {
     "socket.io/socket.io.d.ts": {
-      "commit": "cc3b5a791ca2a851bf208cead433c389c1abc376"
+      "commit": "097542cd03af7255c35366ad074cbbf21592aff1"
     },
     "node/node.d.ts": {
-      "commit": "4cb28c018bf98d2130fd631c407a63fd5c0d269e"
+      "commit": "097542cd03af7255c35366ad074cbbf21592aff1"
     }
   }
 }

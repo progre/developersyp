@@ -29,6 +29,7 @@ module.exports = function(grunt) {
         src: ['src/**/*.ts'],
         dest: 'app/',
         options: {
+          module: 'commonjs',
           target: 'es5',
           basePath: 'src',
           sourceMap: true
@@ -37,7 +38,7 @@ module.exports = function(grunt) {
     },
     develop: {
       server: {
-        file: 'app/app.js',
+        file: 'app/server.js',
         nodeArgs: ['--debug']
       }
     },

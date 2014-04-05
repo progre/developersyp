@@ -1,5 +1,5 @@
-var MongoClient = require('mongodb').MongoClient;
 import ch = require('./../domain/entity/channel');
+var MongoClient = require('mongodb').MongoClient;
 var log4js = require('log4js');
 
 export var address: string = '';
